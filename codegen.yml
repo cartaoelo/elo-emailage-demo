@@ -1,0 +1,16 @@
+overwrite: true
+documents: 'src/services/graphQL/*.ts'
+schema: schema.graphql
+generates:
+  ./src/constants/sdk.ts:
+    config:
+      enumsAsTypes: true
+      rawRequest: true
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-graphql-request
+hooks:
+  afterOneFileWrite:
+    - prettier --write
+    - eslint --fix
