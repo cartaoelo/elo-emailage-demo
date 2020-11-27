@@ -1,52 +1,45 @@
-# Coloque seus dados de acesso
+# **elo-emailage-demo**
 
-Coloque o seu `client_id` e seu `secret` [src/configs/api.ts](https://github.com/apiplaybook/elo-simcard-validation-demo/blob/master/src/configs/api.ts)
+## O que é esse projeto?
 
-# Getting Started with Create React App
+## Este projeto servirá como um exemplo de como consumir e utilizar a API "Elo Emailage - Verificação de risco de e-mail".
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Ambiente / Tecnologias
 
-## Available Scripts
+O projeto foi criado utilizando [`React`](https://pt-br.reactjs.org/) juntamente com [TypeScript](https://www.typescriptlang.org/), uma linguagem que engloba as versões mais atuais do JavaScript/ES6+ e adiciona uma camada de tipagem que o JavaScript não possui por si só.
 
-In the project directory, you can run:
+> **Atenção:** Esta demo foi criado com a ferramenta [Create React App](https://create-react-app.dev/) para ajudar na criação do projeto. Ela fornece uma base de código em `React` evitando _boilerplate code_. Portanto o código conta com algumas partes que foram geradas, packages instalados mas não utilizados, e algumas features dentro do projeto que podem não ser totalmente utilizadas.
 
-### `yarn start`
+## Como rodar o app
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Requisitos:
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+- node.js 8 ou versão superior
+- yarn (opcional, mas recomendado)
 
-### `yarn test`
+Após clonar o projeto, dentro da pasta do mesmo, execute:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```shell
+yarn install
+yarn start
+```
 
-### `yarn build`
+---
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Processos de execução
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Todas as configurações de chamadas para a API Elo podem ser encontradas no arquivo [`api.ts`](./src/configs/api.ts).
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### **Configuração inicial**
 
-### `yarn eject`
+Altere os campos de _client_id_, _secret_ e, se disponível, o id da sua aplicação Google disponível.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+> Obs: caso não tiver um id na plataforma Google Cloud, siga os passos presentes na documentação de [login social](./src/docs/Social.md)
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Realize login na página [login](./src/pages/Home/index.tsx) com seu usuário Elo ou Google, caso haja algum erro, a aplicação devolverá com a descrição do erro. Os dados do login, como o _access token_, serão salvos localmente no seu navegador para facilitar integrações.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### **Elo Emailage - Obtenha um score, avaliação de risco de um determinado e-mail**
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+Após realizar login, selecione o tipo de consulta desejada e insira o e-mail que deseja realizar a verificação e, se desejar, demais informações complementares (opcionais).
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-# elo-validation-verification-demo
+> A documentação dessa API está disponível no Portal Elo, em [Elo Emailage - Verificação do risco de e-mai](https://hml-dev.elo.com.br/documentacao/avaliacao-de-risco-por-email?lng=pt)
