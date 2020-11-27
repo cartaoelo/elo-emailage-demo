@@ -1,0 +1,4734 @@
+"""
+Direct the client to resolve this field locally, either from the cache or local resolvers.
+"""
+directive @client(
+  """
+  When true, the client will never use the cache for this value. See
+  https://www.apollographql.com/docs/react/essentials/local-state/#forcing-resolvers-with-clientalways-true
+  """
+  always: Boolean
+) on FIELD | FRAGMENT_DEFINITION | INLINE_FRAGMENT
+
+"""
+Export this locally resolved field as a variable to be used in the remainder of this query. See
+https://www.apollographql.com/docs/react/essentials/local-state/#using-client-fields-as-variables
+"""
+directive @export(
+  """The variable name to export this field as."""
+  as: String!
+) on FIELD
+
+"""
+Specify a custom store key for this result. See
+https://www.apollographql.com/docs/react/advanced/caching/#the-connection-directive
+"""
+directive @connection(
+  """Specify the store key."""
+  key: String!
+
+  """
+  An array of query argument names to include in the generated custom store key.
+  """
+  filter: [String!]
+) on FIELD
+
+type Query {
+  node(id: ID!): Node
+  personOccupations(language: String): [PersonOccupation!]
+  verifyEmailClassicScore(email: String!, ipAddress: String, firstName: String, lastName: String, phoneNumber: String, legalId: LegalIdsPersonInput, address: [AddressVerifyEmailScoreInput], transaction: TransactionVerifyEmailAgeInput): EmailAgeClassicScoreResponse!
+  verifyEmailRapidScore(email: String!, ipAddress: String, firstName: String, lastName: String, phoneNumber: String, legalId: LegalIdsPersonInput, address: [AddressVerifyEmailScoreInput], transaction: TransactionVerifyEmailAgeInput): EmailAgeRapidScoreResponse!
+  maskedUserContacts(legalIds: LegalIdsInputCpfCnpjInput!): [maskedUserContact!]
+  verifyProfileScore(cpf: String!): ProfileScore!
+  settlementLetter(filter: SettlementLetterFilterInput!): SettlementLetter!
+  settlementLetterPdf(filter: SettlementLetterFilterPdfInput!): SettlementLetterPdf!
+  bin(number: String!): BIN
+  binTable(ifModifiedSince: DateTime, ifNoneMatch: String, cardIssuerName: String, codeProduct: CodeProduct): BINTable
+  cardProducts(first: Int, after: String, last: Int, before: String): CardProductsConnection
+  cardBrands(first: Int, after: String, last: Int, before: String): CardBrandsConnection
+  cardCaptures(first: Int, after: String, last: Int, before: String): CardCapturesConnection
+  cardCapture(code: Int!): CardCapture
+  cardUsages(first: Int, after: String, last: Int, before: String): CardUsagesConnection
+  cardUsage(code: Int!): CardUsage
+  cardNetworks(first: Int, after: String, last: Int, before: String): CardNetworksConnection
+  cardInterfaceByHash(sha256: String!): CardInterface
+  cards(first: Int, after: String, last: Int, before: String, filter: CardFilterInput): CardsConnection
+  cardTokens(first: Int, after: String, last: Int, before: String, filter: CardTokenFilterInput): CardTokensConnection
+  cardHolders(first: Int, after: String, last: Int, before: String, filter: SearchFilterInput): CardHoldersConnection
+  insuranceProductCategory(productCategoryId: ID, displayContains: String): [InsuranceProductCategory!]!
+  cardIssuers(first: Int, after: String, last: Int, before: String, filter: SearchFilterInput): CardIssuersConnection
+  merchants(first: Int, after: String, last: Int, before: String, filter: MerchantFilterInput): MerchantsConnection
+  merchant(legalIds: CompanyLegalIdsInput!): Merchant
+  merchantCategories(first: Int, after: String, last: Int, before: String, filter: MerchantCategoryFilterInput): MerchantCategoriesConnection
+  merchantCategory(iso: Int!): MerchantCategory
+  psp: PSP
+  homeAssistence(id: ID!): HomeAssistence!
+  schedule(id: ID!): [Schedule]!
+  keyLabels(first: Int, after: String, last: Int, before: String, filter: KeyLabelFilterInput): KeyLabelConnection
+  acquirers(filter: AcquirerFilterInput): [Acquirer]
+  verifyPaymentAccounts(first: Int, after: String, last: Int, before: String, filter: VerifyPaymentAccountFilterInput): VerifyPaymentAccountsConnection
+  documents(first: Int, after: String, last: Int, before: String, filter: DocumentsForUserFilterInput!): DocumentConnection
+  simSwap(phone: String!): SimSwap!
+  benefitUsages(filter: BenefitUsagesFilterInput): [BenefitUsage]
+  availableBenefits(filter: AvailableBenefitFilterInput): BenefitCatalog
+  issuedBenefits(filter: BenefitFilterInput): [IssuedBenefit]
+  providers: [Provider]
+  serverPublicKey: ServerPublicKey
+  user(id: String, username: String, legalId: LegalIdsInput, socialNetwork: SocialNetworkInput, cardHolderId: String, merchantId: String): User
+  users(first: Int, after: String, last: Int, before: String, filter: UserFilterInput): UsersConnection
+  provisionedUsers(first: Int, after: String, last: Int, before: String, filter: ProvisionedUserFilterInput): ProvisionedUsersConnection
+  agreementTerms(first: Int, after: String, last: Int, before: String, filter: AgreementTermFilterInput): AgreementTermsConnection
+  cardTokenForUserAsyncStatus(cardTokenRequestId: ID!): CardTokenForUserAsyncStatusPayload!
+  promotions(limit: Int!, offset: Int!, filter: PromotionsFilterInput): PromotionsPage
+  userPromotions(limit: Int!, offset: Int!, filter: RootUserPromotionsFilterInput!): PromotionsPage
+  userInterests(filter: UserInterestsFilter!): [UserInterest!]
+  interests(first: Int, after: String, last: Int, before: String, filter: InterestsFilterInput): InterestsConnection
+  communicationChannelBlock(id: ID!): CommunicationChannelBlock!
+}
+
+interface Node {
+  id: ID!
+}
+
+type PersonOccupation {
+  id: ID!
+  display: String!
+}
+
+input LegalIdsPersonInput {
+  cpf: String!
+}
+
+input AddressVerifyEmailScoreInput {
+  zip: String
+  place: String
+  number: Int
+  city: String
+  state: String
+  country: String
+  countryCode: String
+  type: AddressVerifyEmailScoreEnum!
+}
+
+enum AddressVerifyEmailScoreEnum {
+  SHIPPING
+  BILLING
+}
+
+input TransactionVerifyEmailAgeInput {
+  numberBin: String
+}
+
+type EmailAgeClassicScoreResponse {
+  domain: DomainEmailAgeClassicResponse
+  digitalIdentity: DigitalIdentityEmailAgeResponse
+  ip: IpEmailAgeClassicResponse
+  emailAge: EaEmailAgeClassicResponse
+  email: EmailEmailAgeClassicResponse
+  phone: PhoneEmailAgeClassicResponse
+  transaction: TransactionEmailAgeClassicResponse
+}
+
+type DomainEmailAgeClassicResponse {
+  exists: String
+  name: String
+  company: String
+  country: String
+  category: String
+  corporate: String
+  riskLevel: String
+  relevantInfo: String
+  risklevelId: String
+  relevantInfoId: String
+  countryMatch: String
+  riskCountry: String
+}
+
+type DigitalIdentityEmailAgeResponse {
+  overallScore: Int
+  emailToIpConfidence: Int
+  emailToPhoneConfidence: Int
+  emailToBillAddressConfidence: Int
+  emailToShipAddressConfidence: Int
+  emailToFullNameConfidence: Int
+  emailToLastNameConfidence: Int
+  ipToPhoneConfidence: Int
+  ipToBillAddressConfidence: Int
+  ipToShipAddressConfidence: Int
+  ipToFullNameConfidence: Int
+  ipToLastNameConfidence: Int
+  phoneToBillAddressConfidence: Int
+  phoneToShipAddressConfidence: Int
+  phoneToFullNameConfidence: Int
+  phoneToLastNameConfidence: Int
+  billAddressToFullNameConfidence: Int
+  billAddressToLastNameConfidence: Int
+  shipAddressToBillAddressConfidence: Int
+  shipAddressToFullNameConfidence: Int
+  shipAddressToLastNameConfidence: Int
+}
+
+type IpEmailAgeClassicResponse {
+  riskLevelId: Int
+  riskReasonId: Int
+  riskLevel: String
+  riskReason: String
+  reputation: String
+  anonymousDetected: String
+  proxyType: String
+  isp: String
+  org: String
+  userType: String
+  netSpeedCell: String
+  corporateProxy: String
+  continentCode: String
+  country: String
+  countryCode: String
+  city: String
+  callingcode: String
+  metroCode: String
+  map: String
+  countrymatch: String
+  latitude: Float
+  longitude: Float
+}
+
+type EaEmailAgeClassicResponse {
+  score: Int
+  statusId: Int
+  reasonId: Int
+  adviceId: Int
+  riskBandId: Int
+  status: String
+  reason: String
+  advice: String
+  riskBand: String
+}
+
+type EmailEmailAgeClassicResponse {
+  address: String
+  exists: String
+  gender: String
+  location: String
+  company: String
+  title: String
+  nameMatch: String
+  countryMatch: String
+  sourceIndustry: String
+  dateOfBirth: String
+  fraudRisk: String
+  fraudType: String
+  billRiskCountry: String
+  totalHits: String
+  uniqueHits: String
+  firstVerification: String
+  lastVerification: String
+  lastFlaggEdon: String
+  socialMedia: socialMediaRiskScoreResponse
+}
+
+type socialMediaRiskScoreResponse {
+  socialMediaFriends: Int
+  image: String
+  socialMediaLinks: [socialMediaLink]
+}
+
+type socialMediaLink {
+  source: String
+  link: String
+}
+
+type PhoneEmailAgeClassicResponse {
+  number: String
+  status: String
+  countryCode: String
+  carrier: String
+  carrierType: String
+  ownerName: String
+  ownerNameMatch: String
+  ownerType: String
+}
+
+type TransactionEmailAgeClassicResponse {
+  issuerBank: String
+  issuerBrand: String
+  issuerCountry: String
+  cardCategory: String
+  cardType: String
+}
+
+type EmailAgeRapidScoreResponse {
+  correlationId: String
+  version: String
+  created: String
+  trackingId: String
+  score: Int
+  reason: String
+  riskBand: Int
+  email: EmailAgeRapidResponse
+  domain: DomainEmailAgeRapidResponse
+  transaction: TransactionEmailAgeRapidResponse
+  device: DeviceEmailAgeRapidResponse
+  ip: IpEmailAgeRapidResponse
+  service: ServiceEmailAgeRapidResponse
+  digitalIdentity: DigitalIdentityEmailAgeResponse
+  phone: PhoneEmailAgeRapidResponse
+  address: [AddressEmailAgeRapidResponse]
+}
+
+type EmailAgeRapidResponse {
+  exists: Int
+  ownerNameMatch: Int
+  totalHits: Int
+  uniqueHits: Int
+  firstVerificationDate: String
+  created: String
+  dateOfBirth: String
+  lastFlaggedOn: String
+  ownerName: String
+  gender: String
+  location: String
+  company: String
+  title: String
+  lastFlaggedIndustry: String
+  score: scoreRiskScoreResponse
+  socialMedia: socialMediaRiskScoreResponse
+}
+
+type scoreRiskScoreResponse {
+  reason: String
+  riskLevel: Int
+  relevantInfoId: Int
+}
+
+type DomainEmailAgeRapidResponse {
+  exists: Int
+  categoryCode: Int
+  corporate: Int
+  created: String
+  name: String
+  company: String
+  country: String
+  score: scoreRiskScoreResponse
+}
+
+type TransactionEmailAgeRapidResponse {
+  id: String
+  cardType: Int
+  isPrepaid: Boolean
+  issuerBank: String
+  issuerBrand: String
+  issuerCountry: String
+  cardCategory: String
+  score: scoreRiskScoreResponse
+}
+
+type DeviceEmailAgeRapidResponse {
+  source: Int
+  id: String
+  score: scoreRiskScoreResponse
+}
+
+type IpEmailAgeRapidResponse {
+  address: String
+  isCorporateProxy: Boolean
+  isRiskCountry: Boolean
+  isCountryMatch: Boolean
+  isAnonymous: Boolean
+  reputation: Int
+  proxyType: Int
+  proxyIdentification: Int
+  billingAddressDistance: Float
+  registration: registrationRiskScoreResponse
+  location: locationRiskScoreResponse
+  score: scoreRiskScoreResponse
+}
+
+type registrationRiskScoreResponse {
+  isp: String
+  org: String
+  asnum: String
+  domain: String
+  userType: Int
+  netSpeedCell: Int
+}
+
+type locationRiskScoreResponse {
+  continentCode: String
+  countryCode: String
+  regionCode: String
+  city: String
+  postalCode: String
+  regionConfidence: Int
+  timezoneOffset: Int
+  cityConfidence: Int
+  countryConfidence: Int
+  postalCodeConfidence: Int
+  callingCode: Int
+  metroCode: Int
+  latitude: Float
+  longitude: Float
+}
+
+type ServiceEmailAgeRapidResponse {
+  existingCustomer: Boolean
+  location: String
+  detail: String
+  category: String
+  deliveryType: String
+  date: String
+  score: scoreRiskScoreResponse
+}
+
+type PhoneEmailAgeRapidResponse {
+  isBillingLocation: Boolean
+  number: String
+  ownerNameMatch: Int
+  countryCode: String
+  carrier: String
+  ownerName: String
+  ownerType: String
+  score: scoreRiskScoreResponse
+}
+
+type AddressEmailAgeRapidResponse {
+  isShipForward: Boolean
+  isShipCityPostalMatch: Boolean
+  isBillCityPostalMatch: Boolean
+  addressCheck: Int
+  street1: String
+  street2: String
+  city: String
+  regionCode: String
+  postalCode: String
+  countryCode: String
+  company: String
+  type: String!
+  score: scoreRiskScoreResponse
+}
+
+input LegalIdsInputCpfCnpjInput {
+  cpf: String
+  cnpj: String
+}
+
+type maskedUserContact {
+  id: ID!
+  type: PersonContactType!
+  value: String!
+}
+
+enum PersonContactType {
+  PHONE
+  EMAIL
+  IM
+  OTHER
+}
+
+type ProfileScore {
+  digitalLevel: Boolean
+  score: ScoreClientRisk
+}
+
+type ScoreClientRisk {
+  value: Int
+  spendingIndex: String
+  digitalVarietyRisk: Int
+  digitalBehaviourRisk: Int
+  profileRisk: Int
+  statusRisk: Int
+  postalRisk: Int
+  rapportRisk: Int
+}
+
+input SettlementLetterFilterInput {
+  networkId: Int!
+  gridDate: Date!
+  platformType: PlatformTypeInput!
+}
+
+"""
+A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar Date
+
+enum PlatformTypeInput {
+  DEBITO
+  CREDITO
+}
+
+type SettlementLetter {
+  participantId: Int
+  participantName: String
+  ispb: String
+  platformType: String
+  approvalDate: String
+  contactInfo: ContactInfo
+  firstCycle: Cycle
+  secondCycle: Cycle
+}
+
+type ContactInfo {
+  message: String!
+}
+
+type Cycle {
+  clearingType: String!
+  amount: Float!
+  remunerationData: RemunerationData
+  transactional: [Transactional]
+  services: [Service]
+}
+
+type RemunerationData {
+  description: String
+  value: Float
+  adjustmentValue: Float
+  netValue: Float
+}
+
+type Transactional {
+  participantId: String
+  participantName: String
+  value: Float
+  adjustmentValue: Float
+  netValue: Float
+}
+
+type Service {
+  participantId: String
+  participantName: String
+  value: Float
+  adjustmentValue: Float
+  netValue: Float
+}
+
+input SettlementLetterFilterPdfInput {
+  networkId: Int!
+  gridDate: Date!
+  platformType: PlatformPdfInputType!
+}
+
+enum PlatformPdfInputType {
+  DEBITO
+  CREDITO
+}
+
+type SettlementLetterPdf {
+  file: String
+}
+
+type BIN implements BaseBINInterface {
+  number: String!
+  panSizeRange: IntRange!
+  funding: CardFunding!
+  product: CardProduct!
+  country: String!
+  isInternational: Boolean!
+  regexp: String!
+  isP2PEligible: Boolean @deprecated(reason: "Esse campo deixa de existir devido a nova API de Bin")
+  isCompany: Boolean!
+  isToken: Boolean!
+  brand: CardBrand!
+  allowedCaptures: [CardCapture!]!
+  usages: [CardUsage!]!
+  network: CardNetwork!
+  issuer: CardIssuer!
+  metadata: CardMetadata!
+  services: [CardHolderService!]!
+  changeableServices: [CardHolderService!]
+  isMigrated: Boolean
+  isFlex: Boolean
+  authorizationDebit: binAuthorization
+  authorizationCredit: binAuthorization
+  is3DS: Boolean
+  creditSettlementBankNumber: Int
+  debitSettlementBankNumber: Int
+}
+
+interface BaseBINInterface {
+  number: String!
+  panSizeRange: IntRange!
+  funding: CardFunding!
+  product: CardProduct!
+  country: String!
+  isInternational: Boolean
+  regexp: String!
+}
+
+type IntRange {
+  min: Int!
+  max: Int!
+}
+
+enum CardFunding {
+  CREDIT
+  DEBIT
+  MULTIPLE
+  MEAL
+  FOOD
+  PREPAID
+  VOUCHER
+  MULTIPLE_PREPAID
+}
+
+type CardProduct implements Node {
+  id: ID!
+  code: CodeProduct!
+  name: String!
+  image(width: Int, height: Int, mimeType: String = "image/png"): ImageUrl
+  url: String
+}
+
+enum CodeProduct {
+  BASIC
+  BUSINESS
+  CORPORATE
+  ELO_PLUS
+  SHOPPING
+  GRAFITE
+  NANQUIM
+  AWARDS
+  CORPORATE_EXPENDITURE
+  TRAVEL
+  CORPORATE_NANQUIM
+  GRAFITE_BUSINESS
+  PAYMENT_OF_SUPPLIERS
+  GENERAL_USE
+  GIFT_CARD
+  PAYMENTS
+  ELO_PLUS_ENTERPRISE
+  PREPAID_ENTERPRISE
+  NANQUIM_CORPORATE_DINERS
+  NANQUIM_DINERS
+  CORPORATE_DINERS
+  NANQUIM_ENTERPRISE_DINERS
+  AUTO
+  DEBIT_INTERNATIONAL_ENTERPRISE
+  BNDES
+  PAYMENT_ACCOUNT_LEGAL_PERSON
+  AGRO
+  CONSTRUCARD
+}
+
+type ImageUrl {
+  url: String!
+  width: Int!
+  height: Int!
+  mimeType: String!
+}
+
+type CardBrand implements Node {
+  id: ID!
+  name: String!
+  image(width: Int, height: Int, mimeType: String = "image/png"): ImageUrl
+  url: String
+}
+
+type CardCapture implements Node {
+  id: ID!
+  name: String!
+  code: Int!
+}
+
+type CardUsage implements Node {
+  id: ID!
+  name: String!
+  code: Int!
+}
+
+type CardNetwork implements Node {
+  id: ID!
+  name: String!
+  image(width: Int, height: Int, mimeType: String = "image/png"): ImageUrl
+  url: String
+}
+
+type CardIssuer implements Node & CompanyInterface {
+  id: ID!
+  name: String!
+  legalName: String!
+  description: String
+  image(width: Int, height: Int, mimeType: String = "image/png"): ImageUrl
+  legalIds: CompanyLegalIds!
+  contacts: [CompanyContact!]!
+  addresses: [Address!]!
+  url: String
+  cards(first: Int, after: String, last: Int, before: String, filter: CardFilterInput): CardsConnection
+}
+
+interface CompanyInterface {
+  id: ID!
+  name: String!
+  legalName: String!
+  description: String
+  image(width: Int, height: Int, mimeType: String = "image/png"): ImageUrl
+  legalIds: CompanyLegalIds!
+  contacts: [CompanyContact!]!
+  addresses: [Address!]!
+  url: String
+}
+
+type CompanyLegalIds {
+  cnpj: CNPJ
+}
+
+type CNPJ {
+  number: String!
+}
+
+type CompanyContact {
+  type: CompanyContactType!
+  context: String
+  value: String!
+}
+
+enum CompanyContactType {
+  PHONE
+  EMAIL
+  IM
+  OTHER
+}
+
+type Address {
+  context: String
+  country: String!
+  city: String!
+  state(abbrev: Boolean = false): String
+  zip: String
+  district: String
+  kind: String
+  number: Int
+  place: String!
+  complement: String
+  reference: String
+  instructions: String
+  lon: Float
+  lat: Float
+}
+
+input CardFilterInput {
+  status: CardStatus
+  cardHolderServiceId: ID
+  funding: CardFunding
+  cardProductId: ID
+  cardBrandId: ID
+  cardCaptureId: ID
+  cardUsageId: ID
+  cardNetworkId: ID
+  cardIssuerId: ID
+}
+
+enum CardStatus {
+  INACTIVE
+  ACTIVE
+  SUSPENDED
+}
+
+type CardsConnection {
+  pageInfo: PageInfo!
+  edges: [CardsEdge]
+  totalCount: Int
+}
+
+type PageInfo {
+  hasPreviousPage: Boolean!
+  hasNextPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+type CardsEdge {
+  cursor: String!
+  node: Card
+}
+
+type Card implements Node & CardInterface {
+  id: ID!
+  sensitive(keyId: String): String @deprecated(reason: "Este campo não é retornando. Pois é utilizado apenas para envio de dados.")
+  last4: String
+  expiry: CardExpiry
+  holder: CardHolder
+  billingAddress: Address
+  verificationStatus: CardVerificationStatus
+  status: CardStatusInterface!
+  availableServices: [CardHolderService!]
+  usedServices: [CardHolderService!]
+  bin: BIN
+  funding: CardFunding
+  product: CardProduct
+  isInternational: Boolean
+  isCompany: Boolean
+  isToken: Boolean @deprecated(reason: "Esse campo não deve ser retornado, a pesquisa de tokens é feita separadamente.")
+  cardTokens: CardTokensConnection
+  brand: CardBrand
+  allowedCaptures: [CardCapture!]
+  usages: [CardUsage!]
+  network: CardNetwork
+  issuer: CardIssuer
+  metadata: CardMetadata
+  trackings: [Track]
+  transactions(first: Int, after: String, last: Int, before: String, filter: CardTransactionFilterInput): CardTransactionsConnection
+  transactionsSummary(filter: CardTransactionSummaryFilterInput): [CardTransactionCategorySummary!]
+  fraudTransactions(first: Int, after: String, last: Int, before: String, filter: CardFraudTransactionFilterInput): CardFraudTransactionsConnection
+  queueFraudTransactions(first: Int, after: String, last: Int, before: String, filter: CardFraudTransactionFilterInput): CardFraudTransactionsConnection
+  extendedWarrantyInsurances(first: Int, after: String, last: Int, before: String, filter: ExtendedWarrantyInsuranceFilter): ExtendedWarrantyInsurancesConnection
+  purchaseProtectionInsurances(first: Int, after: String, last: Int, before: String, filter: PurchaseProtectionInsuranceFilter): PurchaseProtectionInsurancesConnection
+  travelInsurances(first: Int, after: String, last: Int, before: String, filter: TravelInsuranceFilter): TravelInsurancesConnection
+  rewards(first: Int, after: String, last: Int, before: String, filter: RewardFilterInput): RewardsConnection
+}
+
+interface CardInterface {
+  id: ID!
+  sensitive(keyId: String): String @deprecated(reason: "Esse campo nao deve ser retornado em nenhum caso")
+  last4: String
+  expiry: CardExpiry
+  holder: CardHolder
+  billingAddress: Address
+  status: CardStatusInterface!
+  bin: BIN
+  funding: CardFunding
+  product: CardProduct
+  isInternational: Boolean
+  isCompany: Boolean
+  isToken: Boolean @deprecated(reason: "Esse campo não deve ser retornado, a pesquisa de tokens é feita separadamente.")
+  brand: CardBrand
+  allowedCaptures: [CardCapture!]
+  usages: [CardUsage!]
+  network: CardNetwork
+  issuer: CardIssuer
+  metadata: CardMetadata
+  availableServices: [CardHolderService!]
+  usedServices: [CardHolderService!]
+  transactions(first: Int, after: String, last: Int, before: String, filter: CardTransactionFilterInput): CardTransactionsConnection
+  transactionsSummary(filter: CardTransactionSummaryFilterInput): [CardTransactionCategorySummary!]
+}
+
+type CardExpiry {
+  month: Int!
+  year: Int!
+}
+
+type CardHolder implements Node {
+  id: ID!
+  name: String
+  firstName: String
+  lastName: String
+  displayName: String
+  companyName: String
+  companyLegalName: String
+  legalIds: LegalIds
+  birthday: Date
+  age: Int
+  gender: Gender
+  maritalStatus: MaritalStatus
+  income: PersonYearlyIncome
+  occupation(language: String): PersonOccupation
+  image(width: Int, height: Int, mimeType: String = "image/png"): ImageUrl
+  contacts: [PersonContact!]
+  addresses: [Address!]
+  wallets: [Wallet!]
+  cards(first: Int, after: String, last: Int, before: String, filter: CardFilterInput): CardsConnection
+  cardTokens(first: Int, after: String, last: Int, before: String, filter: CardTokenFilterInput): CardTokensConnection
+  travelInsurances(first: Int, after: String, last: Int, before: String, filter: TravelInsuranceFilter): TravelInsurancesConnection
+  extendedWarrantyInsurances(first: Int, after: String, last: Int, before: String, filter: ExtendedWarrantyInsuranceFilter): ExtendedWarrantyInsurancesConnection
+  purchaseProtectionInsurances(first: Int, after: String, last: Int, before: String, filter: PurchaseProtectionInsuranceFilter): PurchaseProtectionInsurancesConnection
+  homeAssistences(first: Int, after: String, last: Int, before: String, filter: HomeAssistenceFilter): HomeAssistencesConnection
+  documents(first: Int, after: String, last: Int, before: String, filter: DocumentsFilterInput): DocumentConnection
+  rewards(first: Int, after: String, last: Int, before: String, filter: RewardFilterInput): RewardsConnection
+}
+
+type LegalIds {
+  cnpj: CNPJ
+  cpf: CPF
+  rg: RG
+}
+
+type CPF {
+  number: String!
+}
+
+type RG {
+  number: String!
+  issuerOrganization: String
+  issuerState: String
+  issueDate: Date
+}
+
+enum Gender {
+  FEMALE
+  MALE
+}
+
+enum MaritalStatus {
+  DIVORCED
+  MARRIED
+  SINGLE
+  WIDOWED
+  COMMON_LAW_MARRIED
+}
+
+type PersonYearlyIncome {
+  personal: Float
+  family: Float
+  currency: String
+}
+
+type PersonContact {
+  type: PersonContactType!
+  context: String
+  value: String!
+  verified: VerifiedStatus
+}
+
+enum VerifiedStatus {
+  UNVERIFIED
+  PENDING
+  VERIFIED
+  FAILED
+  NOT_APPLICABLE
+}
+
+type Wallet implements Node {
+  id: ID!
+  name: String!
+  holder: CardHolder!
+  cards(first: Int, after: String, last: Int, before: String, filter: CardFilterInput): CardsConnection
+}
+
+input CardTokenFilterInput {
+  status: CardStatus
+  origin: CardTokenOriginFilter
+}
+
+input CardTokenOriginFilter {
+  ip: String
+  deviceType: DeviceType
+  merchantUserId: String
+  walletId: ID
+}
+
+enum DeviceType {
+  DESKTOP
+  LAPTOP
+  SMARTPHONE
+  TABLET
+  E_READER
+  WATCH
+  OTHER_WEARABLE
+  CAR
+  MOTORCYCLE
+  BOAT
+  AIRPLANE
+  OTHER_VEHICLE
+  PORTABLE_GAME_CONSOLE
+  GAME_CONSOLE
+  CAMERA
+  SMARTTV
+  PORTABLE_MEDIA_DEVICE
+  MEDIA_DEVICE
+  HOME_APPLIANCE
+}
+
+type CardTokensConnection {
+  pageInfo: PageInfo!
+  edges: [CardTokensEdge]
+  totalCount: Int
+}
+
+type CardTokensEdge {
+  cursor: String!
+  node: CardToken
+}
+
+type CardToken implements Node & CardInterface {
+  id: ID!
+  sensitive(keyId: String): String
+  last4: String
+  expiry: CardExpiry
+  holder: CardHolder
+  billingAddress: Address
+  status: CardStatusInterface!
+  usageConstraints: CardUsageConstraints
+  availableServices: [CardHolderService!]
+  usedServices: [CardHolderService!]
+  bin: BIN
+  funding: CardFunding
+  product: CardProduct
+  isInternational: Boolean
+  isCompany: Boolean
+  isToken: Boolean @deprecated(reason: "Esse campo não deve ser retornado, a pesquisa de tokens é feita separadamente.")
+  brand: CardBrand
+  allowedCaptures: [CardCapture!]
+  usages: [CardUsage!]
+  network: CardNetwork
+  issuer: CardIssuer
+  metadata: CardMetadata
+  transactions(first: Int, after: String, last: Int, before: String, filter: CardTransactionFilterInput): CardTransactionsConnection
+  transactionsSummary(filter: CardTransactionSummaryFilterInput): [CardTransactionCategorySummary!]
+  card: Card
+  cardOrigin: CardOrigin
+  origin: CardTokenOrigin
+  tokenRequestorId: String
+  lifeCycleCallbackUrl: String
+}
+
+interface CardStatusInterface {
+  status: CardStatus!
+}
+
+type CardUsageConstraints {
+  maxUsage: Int
+  expiry: DateTime
+  allowedTxAmounts: [CardCurrencyRange!]
+  allowedMerchants: [Merchant!]
+  allowedMerchantCategories: [MerchantCategory!]
+  deniedMerchantCategories: [MerchantCategory!]
+}
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
+
+type CardCurrencyRange {
+  currency: String!
+  min: Float
+  max: Float
+}
+
+type Merchant implements Node & CompanyInterface {
+  id: ID!
+  name: String!
+  legalName: String!
+  description: String
+  image(width: Int, height: Int, mimeType: String = "image/png"): ImageUrl
+  legalIds: CompanyLegalIds!
+  contacts: [CompanyContact!]!
+  addresses: [Address!]!
+  url: String
+  categories: [MerchantCategory!]!
+  transactionFees: [MerchantTransactionFees!]
+  cardTransactions(first: Int, after: String, last: Int, before: String, filter: CardTransactionFilterInput): CardTransactionsConnection
+}
+
+type MerchantCategory implements Node {
+  id: ID!
+  iso: Int!
+  name(language: String): String!
+  image(width: Int, height: Int, mimeType: String = "image/png"): ImageUrl
+  transactionFees: [MerchantTransactionFees!]
+  merchants(first: Int, after: String, last: Int, before: String, filter: SearchFilterInput): MerchantsConnection
+}
+
+type MerchantTransactionFees {
+  cardUsage: CardUsage!
+  installmentsRange: IntRange
+  lastModified: DateTime!
+  expiry: DateTime
+  marketingFee: Float!
+  marketingFeeCeilValue: Float
+  acquiringServiceFee: Float!
+  acquiringServiceFeeCeilValue: Float
+  processingCost: Float!
+  additionalInstallmentCost: Float
+  calc(transactionValue: Float!, installments: Int): MerchantTransactionFeesCalc!
+}
+
+type MerchantTransactionFeesCalc {
+  cardUsage: CardUsage!
+  expiry: DateTime
+  installments: Int!
+  totalCost: Float!
+  processingCost: Float!
+  installmentsCost: Float!
+  marketingCost: Float!
+  acquiringServiceCost: Float!
+}
+
+input SearchFilterInput {
+  filter: String
+}
+
+type MerchantsConnection {
+  pageInfo: PageInfo!
+  edges: [MerchantsEdge]
+  totalCount: Int
+}
+
+type MerchantsEdge {
+  cursor: String!
+  node: Merchant
+}
+
+input CardTransactionFilterInput {
+  startTimestamp: DateTime
+  endTimestamp: DateTime
+  includeMerchantCategories: [MerchantCategoryRangeInput!]
+  excludeMerchantCategories: [MerchantCategoryRangeInput!]
+  status: CardTransactionStatus
+  captureId: ID
+  usageId: ID
+}
+
+input MerchantCategoryRangeInput {
+  min: Int
+  max: Int
+}
+
+enum CardTransactionStatus {
+  APPROVED
+  REJECTED
+  RETURNED
+  REFUNDED
+  CHARGEBACK
+}
+
+type CardTransactionsConnection {
+  pageInfo: PageInfo!
+  edges: [CardTransactionsEdge]
+  totalCount: Int
+}
+
+type CardTransactionsEdge {
+  cursor: String!
+  node: CardTransaction
+}
+
+type CardTransaction implements Node {
+  id: ID!
+  capture: CardCapture!
+  usage: CardUsage
+  bin: BIN
+  merchant: Merchant
+  currency: String!
+  value: String!
+  installments: Int!
+  status: CardTransactionStatus
+  timestamp: DateTime!
+  approvalCode: String
+  prePaid: PrePaid
+}
+
+type PrePaid {
+  currency: String
+  balance: String
+}
+
+type CardHolderService {
+  id: ID
+  name: String
+  description: String
+  image(width: Int, height: Int, mimeType: String = "image/png"): ImageUrl
+  url: String
+  discounts: Discounts
+  offerParameters: OfferParameters
+  offerItems: [OfferItem]
+  isExchangeableOffer: Boolean
+}
+
+type Discounts {
+  holderOrAdditional: Int
+  companion: Int
+}
+
+type OfferParameters {
+  exchangePeriod: Int
+  usageDealine: Int
+  totalRequest: Int
+  mandatory: Boolean
+}
+
+type OfferItem {
+  compositionId: ID
+  name: String
+}
+
+type CardMetadata {
+  image(width: Int, height: Int, mimeType: String = "image/png"): ImageUrl
+  backgroundColor: String
+  foregroundColor: String
+  issuer: String
+  brand: String
+  product: String
+}
+
+input CardTransactionSummaryFilterInput {
+  startTimestamp: DateTime
+  endTimestamp: DateTime
+  includeMerchantCategories: [MerchantCategoryRangeInput!]
+  excludeMerchantCategories: [MerchantCategoryRangeInput!]
+}
+
+type CardTransactionCategorySummary {
+  category: MerchantCategory!
+  count: Int!
+  value: String!
+}
+
+type CardOrigin {
+  id: ID!
+  status: CardStatus
+  last4: String
+  expiry: CardExpiry
+  bin: BIN
+}
+
+type CardTokenOrigin {
+  timestamp: DateTime!
+  ip(ipv6Mapped: Boolean = false): String
+  geolocation: Geolocation
+  device: Device
+  merchant: Merchant
+  merchantUserId: String
+  wallet: Wallet
+}
+
+type Geolocation {
+  lon: Float!
+  lat: Float!
+  alt: Float
+  precision: Float
+  source: GeolocationSource
+}
+
+enum GeolocationSource {
+  USER
+  CELLULAR
+  WIFI
+  GPS
+}
+
+type Device {
+  userAgent: String
+  brand: String
+  model: String
+  type: DeviceType
+  serialNumber: String
+  imei: String
+  os: String
+}
+
+input TravelInsuranceFilter {
+  status: CardHolderInsuranceStatus
+  startDate: Date
+  endDate: Date
+  originCountry: String
+  destinationCountry: String
+}
+
+enum CardHolderInsuranceStatus {
+  RECEIVED
+  HIRED
+  CANCELED
+}
+
+type TravelInsurancesConnection {
+  pageInfo: PageInfo!
+  edges: [TravelInsurancesEdge]
+  totalCount: Int
+}
+
+type TravelInsurancesEdge {
+  cursor: String!
+  node: TravelInsurance
+}
+
+type TravelInsurance implements Node & CardHolderInsuranceInterface {
+  id: ID!
+  cardHolder: CardHolder!
+  bin: BIN!
+  cardId: ID
+  merchant: MerchantInsurance
+  journey: Journey!
+  startDate: Date!
+  endDate: Date!
+  companyInsurance: String!
+}
+
+interface CardHolderInsuranceInterface {
+  id: ID!
+  cardHolder: CardHolder!
+  bin: BIN!
+  startDate: Date!
+  endDate: Date!
+}
+
+type MerchantInsurance {
+  legalId: String!
+  name: String!
+  legalName: String!
+}
+
+type Journey {
+  companyTravel: String
+  journeyLocator: String
+  trips: [Trip!]!
+  purpose: TravelPurpose
+}
+
+type Trip {
+  tripNumber: Int
+  tripLocator: String
+  type: TripType
+  departure: Layover
+  arrival: Layover
+  travelers: [TravelInsuranceTraveler!]!
+}
+
+enum TripType {
+  AIR
+  SEA
+  ROAD
+}
+
+type Layover {
+  IataCode: String
+  IcaoCode: String
+  city: String!
+  country: String!
+  dateTime: DateTime!
+}
+
+type TravelInsuranceTraveler {
+  insurances: [InsuranceTraveler!]
+  legalIds: InsuranceLegalIds!
+  name: String!
+  birthday: Date!
+  gender: Gender!
+  pregnancyWeeks: Int
+  maritalStatus: MaritalStatus!
+  occupation(language: String): PersonOccupation
+  income: PersonYearlyIncome
+  address: Address!
+  contacts: [PersonContact!]
+  politicalExposure: Boolean!
+}
+
+type InsuranceTraveler {
+  insuranceId: ID!
+  description: String!
+  status: CardHolderInsuranceStatus!
+}
+
+type InsuranceLegalIds {
+  cpf: CPF!
+  rg: RG
+}
+
+type TravelPurpose {
+  leisure: Boolean!
+  business: Boolean!
+  adventure: Boolean!
+}
+
+input ExtendedWarrantyInsuranceFilter {
+  status: CardHolderInsuranceStatus
+  startDate: Date
+  endDate: Date
+  categoryId: ID
+}
+
+type ExtendedWarrantyInsurancesConnection {
+  pageInfo: PageInfo!
+  edges: [ExtendedWarrantyInsurancesEdge]
+  totalCount: Int
+}
+
+type ExtendedWarrantyInsurancesEdge {
+  cursor: String!
+  node: ExtendedWarrantyInsurance
+}
+
+type ExtendedWarrantyInsurance implements Node & CardHolderInsuranceInterface {
+  id: ID!
+  insuranceId: ID!
+  cardHolder: CardHolder!
+  bin: BIN!
+  cardId: ID
+  status: CardHolderInsuranceStatus!
+  merchant: MerchantInsurance
+  startDate: Date!
+  endDate: Date!
+  companyInsurance: String
+  invoiceNumber: String
+  invoiceDate: Date
+  serialNumber: String
+  category(language: String): ExtendedWarrantyProductCategory
+  brand: String
+  model: String
+  description: String
+  value: Float
+  extendedWarrantyMonths: Int
+  manufacturerWarrantyMonths: Int
+}
+
+type ExtendedWarrantyProductCategory {
+  id: ID!
+  display: String!
+  products: [ProductCategory!]!
+}
+
+type ProductCategory {
+  id: ID!
+  display: String!
+}
+
+input PurchaseProtectionInsuranceFilter {
+  status: CardHolderInsuranceStatus
+  startDate: Date
+  endDate: Date
+  categoryId: ID
+}
+
+type PurchaseProtectionInsurancesConnection {
+  pageInfo: PageInfo!
+  edges: [PurchaseProtectionInsurancesEdge]
+  totalCount: Int
+}
+
+type PurchaseProtectionInsurancesEdge {
+  cursor: String!
+  node: PurchaseProtectionInsurance
+}
+
+type PurchaseProtectionInsurance implements Node & CardHolderInsuranceInterface {
+  id: ID!
+  insuranceId: ID!
+  cardHolder: CardHolder!
+  merchant: MerchantInsurance
+  bin: BIN!
+  cardId: ID
+  status: CardHolderInsuranceStatus!
+  startDate: Date!
+  endDate: Date!
+  companyInsurance: String!
+  invoiceNumber: String!
+  invoiceDate: Date!
+  serialNumber: String
+  category(language: String): PurchaseProtectionProductCategory
+  brand: String!
+  model: String!
+  description: String!
+  value: Float!
+  coverageDays: Int
+}
+
+type PurchaseProtectionProductCategory {
+  id: ID!
+  display: String!
+  products: [ProductCategory!]!
+}
+
+input HomeAssistenceFilter {
+  id: ID!
+  status: HomeAssistenceStatus
+  type: HomeAssistenceType
+}
+
+enum HomeAssistenceStatus {
+  SERVICE_REQUESTED
+  TO_BE_CONFIRMED
+  CONFIRMED
+  PROVIDER_UNDER_WAY
+  PROVIDER_ON_SERVICE
+  COMPLETED
+}
+
+enum HomeAssistenceType {
+  PLUMBER
+  LOCKSMITH
+  ELECTRICIAN
+  GLAZIER
+}
+
+type HomeAssistencesConnection {
+  pageInfo: PageInfo!
+  edges: [HomeAssistencesEdge]
+  totalCount: Int
+}
+
+type HomeAssistencesEdge {
+  cursor: String!
+  node: HomeAssistence
+}
+
+type HomeAssistence implements Node {
+  id: ID!
+  openedAt: DateTime!
+  updatedAt: DateTime
+  cardHolder: CardHolder!
+  bin: BIN!
+  status: HomeAssistenceStatus!
+  type: HomeAssistenceType!
+  address: Address!
+  person: PersonType!
+  providerAssistence: ProviderAssistence
+  description: String!
+}
+
+type PersonType {
+  name: String!
+  contacts: [PersonContact!]!
+}
+
+type ProviderAssistence {
+  name: String!
+  code: String!
+  legalIds: LegalIds
+  contacts: [PersonContact!]!
+  geolocation: Geolocation
+  merchant: MerchantAssistence
+}
+
+type MerchantAssistence {
+  legalId: String!
+  name: String!
+  legalName: String!
+}
+
+input DocumentsFilterInput {
+  documentType: DocumentType
+  startDate: Date
+  endDate: Date
+  status: DocumentStatus
+  validationStatus: DocumentValidationStatus
+}
+
+enum DocumentType {
+  CNH
+  RG
+}
+
+enum DocumentStatus {
+  ERROR
+  PENDING
+  PROCESSING
+  PROCESSED
+}
+
+enum DocumentValidationStatus {
+  NOT_VALIDATED
+  VALID
+  INVALID
+}
+
+type DocumentConnection {
+  pageInfo: PageInfo!
+  edges: [DocumentsEdge]
+  totalCount: Int
+}
+
+type DocumentsEdge {
+  cursor: String
+  node: Document
+}
+
+type Document {
+  id: ID!
+  documentType: DocumentType!
+  status: DocumentStatus!
+  validationStatus: DocumentValidationStatus!
+  createdAt: DateTime!
+  updatedAt: DateTime
+  cpf: DocumentCpf
+  message: String
+}
+
+type DocumentCpf {
+  number: String
+  name: String
+  birthday: Date
+  death: String
+  status: String
+  issuedAt: String
+}
+
+input RewardFilterInput {
+  status: RewardStatus!
+}
+
+enum RewardStatus {
+  REQUESTED
+  APPROVED
+  ERROR
+}
+
+type RewardsConnection {
+  pageInfo: PageInfo!
+  edges: [RewardsEdge]
+  totalCount: Int
+}
+
+type RewardsEdge {
+  cursor: String!
+  node: Reward
+}
+
+type Reward {
+  id: ID!
+  bin: BIN!
+  cardId: ID
+  description: String
+  compositionId: ID!
+  status: RewardStatus!
+  voucher: String
+  requestedDate: DateTime!
+  statusDate: DateTime
+}
+
+enum CardVerificationStatus {
+  UNVERIFIED
+  VERIFIED_LUHN_ALGORITHM
+  VERIFIED_TRANSACTION
+  INVALID
+}
+
+type Track {
+  type: TrackType!
+  key: String!
+  value: String!
+}
+
+enum TrackType {
+  SELLER
+}
+
+input CardFraudTransactionFilterInput {
+  cardTransactionId: ID
+  codeCapture: Int
+  codeUsage: Int
+  legalIds: CompanyLegalIdsInput
+  iso: Int
+  startTimestamp: DateTime
+  endTimestamp: DateTime
+}
+
+input CompanyLegalIdsInput {
+  cnpj: String
+}
+
+type CardFraudTransactionsConnection {
+  pageInfo: PageInfo!
+  edges: [CardFraudTransactionsEdge]
+  totalCount: Int
+}
+
+type CardFraudTransactionsEdge {
+  cursor: String!
+  node: CardFraudTransaction
+}
+
+type CardFraudTransaction {
+  cardTransaction: CardTransaction!
+  last4: String
+  authorization: Authorization!
+  status: CardFraudTransactionStatus!
+  reference: String
+  codePos: ID!
+  liability: LiabilityType
+  codeEic: Int!
+  flaggedAt: DateTime
+  arn: Int!
+  initiated: InitiatedType!
+  settled: Date!
+}
+
+type Authorization {
+  date: DateTime!
+  code: ID!
+  decision: String!
+}
+
+enum CardFraudTransactionStatus {
+  RECEIVED
+  IN_PROGRESS
+  PROCESSED
+  COMPLETED
+}
+
+enum LiabilityType {
+  YES
+  NO
+  NOT_APPLICABLE
+}
+
+enum InitiatedType {
+  CARD_ISSUER
+  CARD_HOLDER
+}
+
+type binAuthorization {
+  processorId: String
+  processorSettlementId: String
+  settlementBankNumber: Int
+  isP2PEligible: Boolean
+}
+
+type BINTable {
+  lastModified: DateTime @deprecated(reason: "Esse campo deixa de existir devido a nova API de Bin")
+  etag: String @deprecated(reason: "Esse campo deixa de existir devido a nova API de Bin")
+  sizeRange: IntRange!
+  bins: [BIN!]!
+  reserved: [ReservedBIN!]!
+  binsRegexp: String!
+  reservedRegexp: String!
+  allBinsRegexp: String!
+}
+
+type ReservedBIN implements BaseBINInterface {
+  number: String!
+  panSizeRange: IntRange!
+  funding: CardFunding!
+  product: CardProduct!
+  country: String!
+  isInternational: Boolean!
+  regexp: String!
+}
+
+type CardProductsConnection {
+  pageInfo: PageInfo!
+  edges: [CardProductsEdge]
+  totalCount: Int
+}
+
+type CardProductsEdge {
+  cursor: String!
+  node: CardProduct
+}
+
+type CardBrandsConnection {
+  pageInfo: PageInfo!
+  edges: [CardBrandsEdge]
+  totalCount: Int
+}
+
+type CardBrandsEdge {
+  cursor: String!
+  node: CardBrand
+}
+
+type CardCapturesConnection {
+  pageInfo: PageInfo!
+  edges: [CardCapturesEdge]
+  totalCount: Int
+}
+
+type CardCapturesEdge {
+  cursor: String!
+  node: CardCapture
+}
+
+type CardUsagesConnection {
+  pageInfo: PageInfo!
+  edges: [CardUsagesEdge]
+  totalCount: Int
+}
+
+type CardUsagesEdge {
+  cursor: String!
+  node: CardUsage
+}
+
+type CardNetworksConnection {
+  pageInfo: PageInfo!
+  edges: [CardNetworksEdge]
+  totalCount: Int
+}
+
+type CardNetworksEdge {
+  cursor: String!
+  node: CardNetwork
+}
+
+type CardHoldersConnection {
+  pageInfo: PageInfo!
+  edges: [CardHoldersEdge]
+  totalCount: Int
+}
+
+type CardHoldersEdge {
+  cursor: String!
+  node: CardHolder
+}
+
+type InsuranceProductCategory {
+  id: ID!
+  display: String!
+  products: [ProductCategory!]!
+}
+
+type CardIssuersConnection {
+  pageInfo: PageInfo!
+  edges: [CardIssuersEdge]
+  totalCount: Int
+}
+
+type CardIssuersEdge {
+  cursor: String!
+  node: CardIssuer
+}
+
+input MerchantFilterInput {
+  nameContains: String
+  legalIds: [CompanyLegalIdsInput!]
+  includeCategories: [MerchantCategoryRangeInput!]
+  excludeCategories: [MerchantCategoryRangeInput!]
+}
+
+input MerchantCategoryFilterInput {
+  nameContains: String
+  includeCategories: [MerchantCategoryRangeInput!]
+  excludeCategories: [MerchantCategoryRangeInput!]
+}
+
+type MerchantCategoriesConnection {
+  pageInfo: PageInfo!
+  edges: [MerchantCategoriesEdge]
+  totalCount: Int
+}
+
+type MerchantCategoriesEdge {
+  cursor: String!
+  node: MerchantCategory
+}
+
+type PSP implements Node {
+  id: ID!
+  name: String!
+  legalName: String!
+  description: String
+  legalIds: PSPAssociateLegalIds!
+  url: String
+  merchants(first: Int, after: String, last: Int, before: String, filter: MerchantFilterInput): PSPMerchantAssociationsConnection
+}
+
+type PSPAssociateLegalIds {
+  cnpj: CNPJ
+  cpf: CPF
+}
+
+type PSPMerchantAssociationsConnection {
+  pageInfo: PageInfo!
+  edges: [PSPMerchantAssociationsEdge]
+  totalCount: Int
+}
+
+type PSPMerchantAssociationsEdge {
+  cursor: String!
+  node: PSPMerchantAssociation
+}
+
+type PSPMerchantAssociation {
+  psp: PSP!
+  legalIds: PSPAssociateLegalIds!
+  name: String!
+  legalName: String!
+  merchant: Merchant
+  bankAccount: BankAccount
+  zip: String
+  mcc: Int
+  pvCode: String
+  paymentTerm: PaymentTerm
+  type: PSPPersonType
+}
+
+type BankAccount {
+  type: BankAccountType
+  bankId: Int
+  branch: String
+  account: String
+}
+
+enum BankAccountType {
+  CHECKING
+  SAVINGS
+  PAYMENT
+  DEPOSIT
+}
+
+type PaymentTerm {
+  installments: Int
+  credit: Int
+  debit: Int
+}
+
+enum PSPPersonType {
+  PHYSICAL
+  JURIDICAL
+}
+
+type Schedule {
+  date: Date!
+  periods: [PeriodType!]!
+}
+
+enum PeriodType {
+  MORNING
+  AFTERNOON
+}
+
+input KeyLabelFilterInput {
+  keyLabel: String
+  idKeyLabel: Int
+}
+
+type KeyLabelConnection {
+  pageInfo: PageInfo!
+  edges: [KeyLabelEdge]
+  totalCount: Int
+}
+
+type KeyLabelEdge {
+  cursor: String!
+  node: KeyLabel
+}
+
+type KeyLabel implements Node {
+  clientMutationId: String
+  id: ID!
+  keyLabel: String!
+  properties: HsmProperties!
+}
+
+type HsmProperties {
+  mode: String!
+  keyType: String!
+  key: String!
+  ksnDescriptor: String
+  keySerialNumber: String
+  lmkIdentifier: String!
+  padding: PaddingType
+  delimiter: String
+}
+
+enum PaddingType {
+  ZERO
+  ANSI_X_923
+  ISO_7816_4
+  PKCS7
+}
+
+input AcquirerFilterInput {
+  code: String
+}
+
+type Acquirer implements Node & CompanyInterface {
+  id: ID!
+  name: String!
+  legalName: String!
+  description: String
+  code: String!
+  countryCode: String!
+  image(width: Int, height: Int, mimeType: String = "image/png"): ImageUrl
+  legalIds: CompanyLegalIds!
+  contacts: [CompanyContact!]!
+  addresses: [Address!]!
+  url: String
+  fraudTransactions(first: Int, after: String, last: Int, before: String, filter: CardFraudTransactionFilterInput): CardFraudTransactionsConnection
+}
+
+input VerifyPaymentAccountFilterInput {
+  verifyPaymentAccountId: ID
+  legalIds: LegalIdsInputCpfCnpjInput
+  status: PaymentAccountStatus
+  bin: String
+  type: TransactionType
+  idCode: String
+  startTimestamp: DateTime
+  endTimestamp: DateTime
+}
+
+enum PaymentAccountStatus {
+  VALID
+  INVALID
+  NOT_SUPPORTED
+  ERROR
+}
+
+enum TransactionType {
+  CREDIT
+  DEBIT
+}
+
+type VerifyPaymentAccountsConnection {
+  pageInfo: PageInfo!
+  edges: [VerifyPaymentAccountsEdge]
+  totalCount: Int
+}
+
+type VerifyPaymentAccountsEdge {
+  cursor: String!
+  node: VerifyPaymentAccount
+}
+
+type VerifyPaymentAccount {
+  status: PaymentAccountStatus!
+  verifiedAt: DateTime!
+}
+
+input DocumentsForUserFilterInput {
+  legalId: DocumentLegalIdInput!
+  documentType: DocumentType
+  startDate: Date
+  endDate: Date
+  status: DocumentStatus
+  validationStatus: DocumentValidationStatus
+}
+
+input DocumentLegalIdInput {
+  cpf: String!
+}
+
+type SimSwap {
+  tag: String
+  swapMin: String
+  swapMax: String
+}
+
+input BenefitUsagesFilterInput {
+  documentNumber: String!
+}
+
+type BenefitUsage {
+  binNumber: String
+  catalogId: String
+  availability: BenefitAvailability
+  name: String
+  productType: String
+  benefitType: String
+  id: ID
+  bundleId: String
+  bundleName: String
+  benefitChoiceInformation: BenefitChoiceInformation
+  description: String
+  benefitParameters: [BenefitParameter]
+  expirationDate: String
+  price: BenefitPrice
+  status: String
+  usageInformation: BenefitUsageInformation
+  benefitItems: [IssuedBenefitItem]
+  images: [BenefitImage]
+}
+
+type BenefitAvailability {
+  begin: String
+  end: String
+}
+
+type BenefitChoiceInformation {
+  chosenBy: String
+  exchangeDeadline: String
+}
+
+type BenefitParameter {
+  key: String
+  value: String
+}
+
+type BenefitPrice {
+  amount: Int
+  amountFormatted: String
+  currency: String
+  scale: Int
+}
+
+type BenefitUsageInformation {
+  maximumUsageQuantity: String
+  usageQuantity: String
+}
+
+type IssuedBenefitItem {
+  id: ID
+  compositionId: String
+  compositionName: String
+  productType: BenefitItemProductType
+  compositionDescription: String
+  systemParameters: [SystemParameter]
+  componentId: String
+  componentName: String
+  usedAt: [BenefitItemUsed]
+}
+
+type BenefitItemProductType {
+  id: ID
+  name: String
+}
+
+type SystemParameter {
+  key: String
+  value: String
+}
+
+type BenefitItemUsed {
+  status: String
+  usedAt: String
+  usageDate: String
+  coverageEndDate: String
+  tripDestination: String
+}
+
+type BenefitImage {
+  type: String
+  url: String
+}
+
+input AvailableBenefitFilterInput {
+  bin: String!
+  documentNumber: String!
+  cardId: ID!
+}
+
+type BenefitCatalog {
+  id: ID
+  name: String
+  availability: CatalogAvailability
+  numberOfElements: Int
+  productTypes: [BenefitProductType]
+  quantityOfBenefitsWithMinimumPrice: String
+  minimumBenefitPrice: String
+  benefits: [AvailableBenefit]
+}
+
+type CatalogAvailability {
+  begin: String
+  end: String
+}
+
+type BenefitProductType {
+  name: String
+}
+
+type AvailableBenefit {
+  availability: BenefitAvailability
+  isNew: Boolean
+  name: String
+  productType: String
+  benefitType: String
+  id: ID
+  bundleId: String
+  bundleName: String
+  description: String
+  benefitParameters: [BenefitParameter]
+  validity: BenefitValidity
+  price: BenefitPrice
+  status: String
+  isExchangeableOffer: Boolean
+  benefitItems: [AvailableBenefitItem]
+  catalogId: String
+  images: [BenefitImage]
+}
+
+type BenefitValidity {
+  period: String
+  duration: Int
+  unlimited: Boolean
+}
+
+type AvailableBenefitItem {
+  id: ID
+  compositionId: String
+  compositionName: String
+  productType: BenefitItemProductType
+  compositionDescription: String
+  systemParameters: [SystemParameter]
+  componentId: String
+  componentName: String
+}
+
+input BenefitFilterInput {
+  documentNumber: String!
+  bin: String!
+  cardId: ID!
+}
+
+type IssuedBenefit {
+  catalogId: String
+  availability: BenefitAvailability
+  name: String
+  productType: String
+  benefitType: String
+  id: ID
+  bundleId: String
+  bundleName: String
+  benefitChoiceInformation: BenefitChoiceInformation
+  description: String
+  benefitParameters: [BenefitParameter]
+  expirationDate: String
+  price: BenefitPrice
+  status: String
+  usageInformation: BenefitUsageInformation
+  benefitItems: [IssuedBenefitItem]
+  images: [BenefitImage]
+}
+
+type Provider {
+  id: ID
+  name: String
+}
+
+type ServerPublicKey {
+  key: String!
+}
+
+input LegalIdsInput {
+  cpf: String
+  cnpj: String
+  rg: RGInput
+}
+
+input RGInput {
+  number: String!
+  issuerOrganization: String
+  issuerState: String
+  issueDate: Date
+}
+
+input SocialNetworkInput {
+  provider: String!
+  username: String!
+}
+
+type User implements Node {
+  id: ID!
+  verified: VerifiedStatus
+  username: String
+  name: String
+  firstName: String
+  lastName: String
+  displayName: String
+  legalIds: LegalIds
+  birthday: Date
+  age: Int
+  gender: Gender
+  maritalStatus: MaritalStatus
+  income: PersonYearlyIncome
+  occupation(language: String): PersonOccupation
+  image(width: Int, height: Int, mimeType: String = "image/png"): ImageUrl
+  contacts: [PersonContact!]
+  addresses: [Address!]
+  cardHolders: [CardHolder!]
+  merchants: [Merchant!]
+  cardIssuers: [CardIssuer!]
+  socialNetworks: [SocialNetwork!]
+  agreements: [UserAgreement!]
+  accessTokens: [AccessTokenInfo!]
+  publicKeys: [PublicKey!]
+  originId: ID
+  origin: String
+  analyticsId: ID!
+  acquirer: Acquirer
+  validation: UserValidation!
+  motherName: String
+  promotions(limit: Int!, offset: Int!, filter: UserPromotionsFilterInput): UserPromotionsPage
+  communicationChannels: [String!]
+  interests: [UserInterest!]
+  communicationChannelBlocks: [CommunicationChannelBlock]
+}
+
+type SocialNetwork {
+  provider: String!
+  username: String!
+}
+
+type UserAgreement {
+  agreementTerm: AgreementTerm!
+  timestamp: DateTime!
+}
+
+type AgreementTerm implements Node {
+  id: ID!
+  title: String!
+  description: String
+  url: String
+  category: AgreementTermCategory
+  isWalletDigital: Boolean
+}
+
+enum AgreementTermCategory {
+  GENERAL
+  COMMUNICATION
+  PRIVACY_POLICY
+  PROMOTION
+  CONSENT
+}
+
+type AccessTokenInfo {
+  accessToken: String!
+  timestamp: DateTime!
+  ip(ipv6Mapped: Boolean = false): String
+  geolocation: Geolocation
+  device: Device
+}
+
+type PublicKey {
+  id: String!
+  key: String!
+}
+
+type UserValidation {
+  status: UserValidationStatus!
+  detail: String
+}
+
+enum UserValidationStatus {
+  APPROVED
+  UNDER_REVIEW
+  DENIED
+}
+
+input UserPromotionsFilterInput {
+  won: Boolean
+  id: ID
+  startCreatedDate: DateTime
+  endCreatedDate: DateTime
+  status: String
+  promotionTypeId: String
+  startValidity: DateTime
+  endValidity: DateTime
+  slug: String
+}
+
+type UserPromotionsPage {
+  items: [UserPromotion]
+  totalCount: Int
+  totalPages: Int
+}
+
+type UserPromotion {
+  id: ID!
+  createdDate: DateTime
+  title: String
+  promotionTypeId: String
+  description: String
+  agreementTermId: ID
+  frequency: String
+  inputType: PromotionInputType
+  optInRequired: Boolean
+  rankable: Boolean
+  requiredInfo: [String]
+  restrictedUsers: Boolean
+  startValidity: DateTime
+  endValidity: DateTime
+  status: PromotionStatus
+  validityRequired: Boolean
+  slug: String
+  drawDate: Date
+  origin: String
+  gateway: String
+  budget: Float
+  prizes(limit: Int!, offset: Int!, filter: UserPrizesFilterInput): UserPrizesPage
+}
+
+enum PromotionInputType {
+  VOX
+  ISO
+  MANUAL
+}
+
+enum PromotionStatus {
+  DRAFT
+  ACTIVE
+  INACTIVE
+}
+
+input UserPrizesFilterInput {
+  won: Boolean
+}
+
+type UserPrizesPage {
+  items: [UserPrize]
+  totalCount: Int
+  totalPages: Int
+}
+
+type UserPrize {
+  id: ID!
+  createdDate: DateTime
+  name: String
+  description: String
+  prizeTypeId: String
+  rank: String
+  startValidity: DateTime
+  endValidity: DateTime
+  slug: String
+  status: String
+  value: String
+  precedenceOrder: Int
+  waitingTime: Int
+  referenceDate: DateTime
+  winners(limit: Int!, offset: Int!, filter: UserWinnersFilterInput): UserWinnersPage
+}
+
+input UserWinnersFilterInput {
+  won: Boolean
+}
+
+type UserWinnersPage {
+  items: [UserWinner]
+  totalCount: Int
+  totalPages: Int
+}
+
+type UserWinner {
+  id: ID!
+  createdDate: DateTime
+  name: String
+  slug: String
+  currentUser: Boolean
+}
+
+type UserInterest implements Node {
+  id: ID!
+  title: String!
+  description: String
+}
+
+type CommunicationChannelBlock {
+  id: ID!
+  cpf: String!
+  status: CommunicationChannelBlockStatus!
+  begin: Date!
+  end: Date!
+}
+
+enum CommunicationChannelBlockStatus {
+  ACTIVE
+  BLOCKED
+  COMPLETED
+  DELETED
+  ERROR
+}
+
+input UserFilterInput {
+  nameContains: String
+  birthday: Date
+  age: Int
+  gender: Gender
+  maritalStatus: MaritalStatus
+  merchantIds: [ID!]
+  cardIssuerIds: [ID!]
+  socialNetworkProviders: [String!]
+  agreementTermIds: [ID!]
+  origin: String
+}
+
+type UsersConnection {
+  pageInfo: PageInfo!
+  edges: [UsersEdge]
+  totalCount: Int
+}
+
+type UsersEdge {
+  cursor: String!
+  node: User
+}
+
+input ProvisionedUserFilterInput {
+  name: String
+  legalId: LegalIdsInput
+  bin: String
+  last4: String
+  origin: String
+  analyticsId: String
+}
+
+type ProvisionedUsersConnection {
+  pageInfo: PageInfo!
+  edges: [ProvisionedUsersEdge]
+  totalCount: Int
+}
+
+type ProvisionedUsersEdge {
+  cursor: String!
+  node: ProvisionedUser
+}
+
+type ProvisionedUser implements Node {
+  id: ID!
+  username: String
+  name: String
+  legalIds: LegalIds!
+  birthday: Date
+  age: Int
+  gender: Gender
+  maritalStatus: MaritalStatus
+  income: PersonYearlyIncome
+  occupation(language: String): PersonOccupation
+  contacts: [PersonContact]
+  addresses: [Address]
+  cards(track: TrackFilter, funding: CardFunding): [Card]
+  cardTokens: [CardToken]
+  migrated: Boolean!
+  originId: ID
+  origin: String
+  agreements: [UserAgreement!]
+  analyticsId: ID!
+  transaction: Transaction
+  event: String
+  ticket: String
+  motherName: String
+  communicationChannels: [String!]
+  interests: [UserInterest!]
+}
+
+input TrackFilter {
+  type: TrackType!
+  key: String!
+}
+
+type Transaction {
+  transactionId: String
+  dateTime: DateTime
+  amount: Amount
+}
+
+type Amount {
+  currency: String!
+  value: String!
+}
+
+input AgreementTermFilterInput {
+  nameContains: String
+  agreementTermIds: [ID!]
+  isWalletDigital: Boolean
+}
+
+type AgreementTermsConnection {
+  pageInfo: PageInfo!
+  edges: [AgreementTermsEdge]
+  totalCount: Int
+}
+
+type AgreementTermsEdge {
+  cursor: String!
+  node: AgreementTerm
+}
+
+type CardTokenForUserAsyncStatusPayload {
+  cardTokenRequestId: ID!
+  callbackUrl: String!
+  status: CardTokenForUserAsyncStatus!
+  statusDetail: String
+}
+
+enum CardTokenForUserAsyncStatus {
+  ACTIVE
+  IN_PROGRESS
+  SUCCESS
+  ERROR
+}
+
+input PromotionsFilterInput {
+  id: ID
+  startCreatedDate: DateTime
+  endCreatedDate: DateTime
+  status: String
+  promotionTypeId: String
+  startValidity: DateTime
+  endValidity: DateTime
+  slug: String
+}
+
+type PromotionsPage {
+  items: [Promotion]
+  totalCount: Int
+  totalPages: Int
+}
+
+type Promotion {
+  id: ID!
+  createdDate: DateTime
+  title: String
+  promotionTypeId: String
+  description: String
+  agreementTermId: ID
+  frequency: String
+  inputType: PromotionInputType
+  optInRequired: Boolean
+  rankable: Boolean
+  requiredInfo: [String]
+  restrictedUsers: Boolean
+  startValidity: DateTime
+  endValidity: DateTime
+  status: PromotionStatus
+  validityRequired: Boolean
+  slug: String
+  drawDate: Date
+  origin: String
+  gateway: String
+  budget: Float
+  prizes(limit: Int!, offset: Int!, filter: PrizesFilterInput): PrizesPage
+}
+
+input PrizesFilterInput {
+  slug: String
+}
+
+type PrizesPage {
+  items: [Prize]
+  totalCount: Int
+  totalPages: Int
+}
+
+type Prize {
+  id: ID!
+  createdDate: DateTime
+  name: String
+  description: String
+  prizeTypeId: String
+  rank: String
+  startValidity: DateTime
+  endValidity: DateTime
+  slug: String
+  status: String
+  value: String
+  precedenceOrder: Int
+  waitingTime: Int
+  referenceDate: DateTime
+  winners(limit: Int!, offset: Int!, filter: WinnersFilterInput): WinnersPage
+}
+
+input WinnersFilterInput {
+  slug: String
+}
+
+type WinnersPage {
+  items: [Winner]
+  totalCount: Int
+  totalPages: Int
+}
+
+type Winner {
+  id: ID!
+  createdDate: DateTime
+  name: String
+  slug: String
+}
+
+input RootUserPromotionsFilterInput {
+  startCreatedDate: DateTime
+  endCreatedDate: DateTime
+  status: String
+  promotionTypeId: String
+  startValidity: DateTime
+  endValidity: DateTime
+  slug: String
+  cpf: String!
+}
+
+input UserInterestsFilter {
+  userIdSha256: String!
+}
+
+input InterestsFilterInput {
+  titleContains: String
+  descriptionContains: String
+  interestsIds: [ID!]
+}
+
+type InterestsConnection {
+  pageInfo: PageInfo!
+  edges: [InterestsEdge]
+  totalCount: Int
+}
+
+type InterestsEdge {
+  cursor: String!
+  node: UserInterest
+}
+
+type Mutation {
+  createCardToken(input: CreateCardTokenInput!): CreateCardTokenPayload!
+  suspendCardToken(input: SuspendCardTokenInput!): SuspendCardTokenPayload!
+  activateCardToken(input: ActivateCardTokenInput!): ActivateCardTokenPayload!
+  updateCardOriginToToken(input: UpdateCardOriginToTokenInput!): UpdateCardOriginToTokenPayload
+  requestSecondWayOfInsurancePolicy(input: RequestSecondWayOfInsurancePolicyInput!): RequestSecondWayOfInsurancePolicyPayload!
+  createExtendedWarrantyInsurance(input: CreateExtendedWarrantyInsuranceInput!): CreateExtendedWarrantyInsurancePayload!
+  addCardToWallet(input: AddCardToWalletInput!): AddCardToWalletPayload!
+  removeCardFromWallet(input: RemoveCardFromWalletInput!): RemoveCardFromWalletPayload!
+  createWallet(input: CreateWalletInput!): CreateWalletPayload!
+  deleteWallet(input: DeleteWalletInput!): DeleteWalletPayload!
+  updateWallet(input: UpdateWalletInput!): UpdateWalletPayload!
+  associatePSPMerchant(input: AssociatePSPMerchantInput!): AssociatePSPMerchantPayload
+  dissociatePSPMerchant(input: DissociatePSPMerchantInput!): DissociatePSPMerchantPayload
+  createPullTransfer(input: CreatePullTransferInput!): CreatePullTransferPayload
+  createPushTransfer(input: CreatePushTransferInput!): CreatePushTransferPayload
+  createPullTransferToUser(input: CreatePullTransferToUserInput!): CreatePullTransferToUserPayload
+  createPushTransferToUser(input: CreatePushTransferToUserInput!): CreatePushTransferToUserPayload
+  createReverseTransaction(input: CreateReverseTransactionInput!): CreateReverseTransactionPayload
+  createReverseTransactionNotification(input: CreateReverseTransactionNotificationInput!): CreateReverseTransactionNotificationPayload
+  createHomeAssistence(input: CreateHomeAssistenceInput!): CreateHomeAssistencePayload!
+  updateHomeAssistence(input: UpdateHomeAssistenceInput!): UpdateHomeAssistencePayload!
+  cancelHomeAssistence(input: CancelHomeAssistenceInput!): CancelHomeAssistencePayload!
+  confirmHomeAssistence(input: ConfirmHomeAssistenceInput!): ConfirmHomeAssistencePayload!
+  createPurchaseProtectionInsurance(input: CreatePurchaseProtectionInsuranceInput!): CreatePurchaseProtectionInsurancePayload!
+  createTravelInsurance(input: CreateTravelInsuranceInput!): CreateTravelInsurancePayload!
+  encrypt(input: EncryptInput!): EncryptPayload
+  decrypt(input: DecryptInput!): DecryptPayload
+  createHash(input: CreateHashInput!): CreateHashPayload
+  verifyPaymentAccount(input: VerifyPaymentAccountInput!): VerifyPaymentAccountPayload
+  createLoginSalt(input: CreateLoginSaltInput!): CreateLoginSaltPayload!
+  login(input: LoginInput!): LoginPayload!
+  socialNetworkOAuthLogin(input: SocialNetworkOAuthLoginInput!): LoginPayload!
+  logout(input: LogoutInput!): LogoutPayload!
+  createUser(input: CreateUserInput!): CreateUserPayload!
+  unsubscribeUser(input: UnsubscribeUserInput!): UnsubscribeUserPayload
+  verifyDocument(input: VerifyDocumentInput!): VerifyDocumentPayload
+  verifyDocumentForUser(input: VerifyDocumentForUserInput!): VerifyDocumentPayload
+  refreshAccessToken(input: RefreshAccessTokenInput!): RefreshAccessTokenPayload
+  verifyDataScore(input: VerifyDataScoreInput!): VerifyDataScorePayload
+  changeBenefit(input: ChangeBenefitInput!): ChangeBenefitPayload
+  requestReward(input: RequestRewardInput!): RequestRewardPayload
+  resendReward(input: ResendRewardInput!): ResendRewardPayload
+  verifyUserScore(input: VerifyUserScoreInput!): VerifyUserScorePayload
+  createCustomerCase(input: CaseCustomerNotificationInput!): CaseCustomerNotificationPayload
+  setImage(input: SetImageInput!): SetImagePayload
+  createCard(input: CreateCardInput!): CreateCardPayload
+  deleteCard(input: DeleteCardInput!): DeleteCardPayload!
+  updateCard(input: UpdateCardInput!): UpdateCardPayload
+  updateCardVerification(input: UpdateCardVerificationInput!): UpdateCardVerificationPayload
+  createProvisionedCard(input: CreateProvisionedCardInput!): CreateCardPayload
+  deleteCardHolder(input: DeleteCardHolderInput!): DeleteCardHolderPayload!
+  requestPasswordReset(input: RequestPasswordResetInput!): RequestPasswordResetPayload!
+  passwordReset(input: PasswordResetInput!): PasswordResetPayload!
+  requestContactVerification(input: RequestContactVerificationInput!): RequestContactVerificationPayload!
+  contactVerification(input: ContactVerificationInput!): ContactVerificationPayload!
+  deleteUser(input: DeleteUserInput!): DeleteUserPayload!
+  updateUser(input: UpdateUserInput!): UpdateUserPayload!
+  createCardHolderForUser(input: CreateCardHolderForUserInput!): CreateCardHolderForUserPayload!
+  addCardIssuerToUser(input: AddCardIssuerToUserInput!): AddCardIssuerToUserPayload!
+  removeCardIssuerFromUser(input: RemoveCardIssuerFromUserInput!): RemoveCardIssuerFromUserPayload!
+  addMerchantToUser(input: AddMerchantToUserInput!): AddMerchantToUserPayload!
+  removeMerchantFromUser(input: RemoveMerchantFromUserInput!): RemoveMerchantFromUserPayload!
+  addSocialNetworkToUser(input: AddSocialNetworkToUserInput!): AddSocialNetworkToUserPayload!
+  removeSocialNetworkFromUser(input: RemoveSocialNetworkFromUserInput!): RemoveSocialNetworkFromUserPayload!
+  addPublicKeyToUser(input: AddPublicKeyToUserInput!): AddPublicKeyToUserPayload!
+  removePublicKeyFromUser(input: RemovePublicKeyFromUserInput!): RemovePublicKeyFromUserPayload!
+  addAgreementToUser(input: AddAgreementToUserInput!): AddAgreementToUserPayload!
+  removeAgreementFromUser(input: RemoveAgreementFromUserInput!): RemoveAgreementFromUserPayload!
+  createAgreementTerm(input: CreateAgreementTermInput!): CreateAgreementTermPayload!
+  removeAgreementTerm(input: RemoveAgreementTermInput!): RemoveAgreementTermPayload!
+  passwordUpdate(input: PasswordUpdateInput!): PasswordUpdatePayload!
+  addPublicKeyToProvisionedUser(input: AddPublicKeyToUserInput!): AddPublicKeyToUserPayload!
+  createProvisionedUser(input: CreateProvisionedUserInput!): CreateProvisionedUserPayload!
+  updateProvisionedUser(input: UpdateProvisionedUserInput!): UpdateProvisionedUserPayload!
+  addAgreementToProvisionedUser(input: AddAgreementToUserInput!): AddAgreementToUserPayload!
+  removeAgreementFromProvisionedUser(input: RemoveAgreementFromUserInput!): RemoveAgreementFromUserPayload!
+  addAcquirerToUser(input: AddAcquirerToUserInput!): AddAcquirerToUserPayload!
+  removeAcquirerFromUser(input: RemoveAcquirerFromUserInput!): RemoveAcquirerFromUserPayload!
+  createCardTokenForUser(input: CreateCardTokenForUserInput!): CreateCardTokenForUserPayload!
+  createCardTokenForUserAsync(input: CreateCardTokenForUserAsyncInput!): CreateCardTokenForUserAsyncPayload!
+  updateCardTokenCallbackUrl(input: UpdateCardTokenCallbackUrlInput!): UpdateCardTokenCallbackUrlPayload!
+  createCardFraudTransaction(input: CreateCardFraudTransactionInput!): CreateCardFraudTransactionPayload
+  setCommunicationChannels(input: CommunicationChannelInput!): CommunicationChannelPayload
+  setProvisionedCommunicationChannels(input: ProvisionedCommunicationChannelInput!): ProvisionedCommunicationChannelPayload
+  createUserInterest(input: CreateUserInterestInput!): CreateUserInterestPayload!
+  removeUserInterest(input: RemoveUserInterestInput!): RemoveUserInterestPayload!
+  addInterestToUser(input: AddInterestToUserInput!): AddInterestToUserPayload!
+  removeInterestFromUser(input: RemoveInterestFromUserInput!): RemoveInterestFromUserPayload!
+  addInterestToProvisionedUser(input: AddInterestToProvisionedUserInput!): AddInterestToUserPayload!
+  removeInterestFromProvisionedUser(input: RemoveInterestFromProvisionedUserInput!): RemoveInterestFromUserPayload!
+  updateUserInterests(input: UpdateUserInterestsInput!): UpdateUserInterestsPayload!
+  createCommunicationChannelBlock(input: CommunicationChannelBlockInput!): CommunicationChannelBlock!
+  deleteCommunicationChannelBlock(id: ID!): CommunicationChannelBlockPayload!
+}
+
+input CreateCardTokenInput {
+  clientMutationId: String
+  cardId: ID
+  sensitive: String
+  origin: CreateCardTokenOriginInput
+  usageConstraints: CardUsageConstraintsInput
+  tokenRequestorId: String!
+}
+
+input CreateCardTokenOriginInput {
+  ip: String
+  geolocation: GeolocationInput
+  device: DeviceInput
+  merchantUserId: String
+  walletId: ID
+}
+
+input GeolocationInput {
+  lon: Float!
+  lat: Float!
+  alt: Float
+  precision: Float
+  source: GeolocationSource
+}
+
+input DeviceInput {
+  userAgent: String
+  brand: String
+  model: String
+  type: DeviceType
+  serialNumber: String
+  imei: String
+  os: String
+}
+
+input CardUsageConstraintsInput {
+  maxUsage: Int
+  expiry: DateTime
+  allowedTxAmounts: [CardCurrencyRangeInput!]
+  allowedIdCodes: [ID!]
+  allowedMerchantCategories: [MerchantCategoryRangeInput!]
+  deniedMerchantCategories: [MerchantCategoryRangeInput!]
+}
+
+input CardCurrencyRangeInput {
+  currency: String!
+  min: Float
+  max: Float
+}
+
+type CreateCardTokenPayload {
+  clientMutationId: String
+  cardToken: CardToken
+}
+
+input SuspendCardTokenInput {
+  clientMutationId: String
+  cardTokenId: ID!
+  permanent: Boolean
+  reason: CardSuspendReason!
+}
+
+enum CardSuspendReason {
+  ISSUER
+  CARDHOLDER
+  PIN_LOCKED
+  TOKEN_REQUESTOR
+}
+
+type SuspendCardTokenPayload {
+  clientMutationId: String
+  cardToken: CardToken
+}
+
+input ActivateCardTokenInput {
+  clientMutationId: String
+  cardTokenId: ID!
+}
+
+type ActivateCardTokenPayload {
+  clientMutationId: String
+  cardToken: CardToken
+}
+
+input UpdateCardOriginToTokenInput {
+  clientMutationId: String
+  cardOriginToTokens: [CardOriginToTokenInput!]!
+}
+
+input CardOriginToTokenInput {
+  updateCardOriginId: ID!
+  sensitiveCurrent: String
+  sensitiveNew: String!
+}
+
+type UpdateCardOriginToTokenPayload {
+  clientMutationId: String
+  cardOriginToTokens: [CardOriginToToken]
+}
+
+type CardOriginToToken {
+  statusUpdate: UpdateStatus
+  updateCardOriginId: ID
+  bin: BIN
+  last4: String
+  errorDescription: String
+}
+
+enum UpdateStatus {
+  UPDATED
+  NOT_UPDATED
+}
+
+input RequestSecondWayOfInsurancePolicyInput {
+  clientMutationId: String
+  insuranceId: ID!
+  type: InsuranceType!
+}
+
+enum InsuranceType {
+  TRAVEL
+  PURCHASEPROTECTION
+  EXTENDEDWARRANTY
+}
+
+type RequestSecondWayOfInsurancePolicyPayload {
+  clientMutationId: String
+  maskedEmail: String!
+}
+
+input CreateExtendedWarrantyInsuranceInput {
+  clientMutationId: String
+  bin: String!
+  cardId: ID
+  merchant: MerchantInsuranceInput
+  invoiceNumber: String
+  invoiceDate: Date
+  serialNumber: String
+  brand: String
+  model: String
+  description: String
+  value: Float!
+  extendedWarrantyMonths: Int
+  manufacturerWarrantyMonths: Int
+  productId: ID
+}
+
+input MerchantInsuranceInput {
+  legalId: String!
+  name: String!
+  legalName: String!
+}
+
+type CreateExtendedWarrantyInsurancePayload {
+  clientMutationId: String
+  extendedWarrantyInsurance: ExtendedWarrantyInsurance
+}
+
+input AddCardToWalletInput {
+  clientMutationId: String
+  walletId: ID!
+  cardId: ID
+  sensitive: String
+}
+
+type AddCardToWalletPayload {
+  clientMutationId: String
+  wallet: Wallet
+  card: Card
+}
+
+input RemoveCardFromWalletInput {
+  clientMutationId: String
+  walletId: ID!
+  cardId: ID!
+}
+
+type RemoveCardFromWalletPayload {
+  clientMutationId: String
+  wallet: Wallet
+  card: Card
+}
+
+input CreateWalletInput {
+  clientMutationId: String
+  name: String!
+}
+
+type CreateWalletPayload {
+  clientMutationId: String
+  wallet: Wallet
+  holder: CardHolder
+}
+
+input DeleteWalletInput {
+  clientMutationId: String
+  walletId: ID!
+}
+
+type DeleteWalletPayload {
+  clientMutationId: String
+  walletId: ID
+  name: String
+  holder: CardHolder
+}
+
+input UpdateWalletInput {
+  clientMutationId: String
+  walletId: ID!
+  name: String!
+}
+
+type UpdateWalletPayload {
+  clientMutationId: String
+  wallet: Wallet
+}
+
+input AssociatePSPMerchantInput {
+  clientMutationId: String
+  legalId: String!
+  name: String!
+  legalName: String!
+  bankAccount: BankAccountInput!
+  zip: String
+  type: PSPPersonType
+  mcc: Int!
+  pvCode: String
+  paymentTerm: PaymentTermInput
+}
+
+input BankAccountInput {
+  type: BankAccountType!
+  bankId: Int!
+  branch: String!
+  account: String!
+}
+
+input PaymentTermInput {
+  installments: Int
+  credit: Int
+  debit: Int
+}
+
+type AssociatePSPMerchantPayload {
+  clientMutationId: String
+  legalId: String
+}
+
+input DissociatePSPMerchantInput {
+  clientMutationId: String
+  pspId: Int!
+  legalId: String!
+}
+
+type DissociatePSPMerchantPayload {
+  clientMutationId: String
+  legalId: String
+}
+
+input CreatePullTransferInput {
+  clientMutationId: String
+  acquirer: AcquirerInput!
+  merchant: MerchantInput!
+  cardId: ID
+  sensitive: String
+  cipheredTransactionCryptogram: String
+  amount: AmountInput!
+  systemsTraceAuditNumber: String!
+  transactionDateTime: DateTimeZone!
+  transactionIdentifier: String!
+  retrievalReferenceNumber: String!
+  codeUsage: Int!
+  origin: P2POriginInput
+  pointOfService: PointOfServiceInput
+  receiver: ReceiverPullInput!
+}
+
+input AcquirerInput {
+  id: ID!
+  code: String!
+  countryCode: String!
+}
+
+input MerchantInput {
+  name: String!
+  legalName: String!
+  description: String
+  legalIds: LegalIdsInput!
+  contact: PersonContactInput!
+  address: AddressInput!
+  url: String
+  iso: Int!
+  countryCode: String!
+  idCode: String!
+}
+
+input PersonContactInput {
+  type: PersonContactType!
+  context: String
+  value: String!
+}
+
+input AddressInput {
+  context: String
+  country: String!
+  city: String!
+  state: String!
+  stateAbbrev: String
+  zip: String
+  district: String
+  kind: String
+  number: Int!
+  place: String!
+  complement: String
+  reference: String
+  instructions: String
+  lon: Float
+  lat: Float
+}
+
+input AmountInput {
+  currency: String!
+  value: String!
+}
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTimeZone
+
+input P2POriginInput {
+  geolocation: GeolocationInput
+  device: DeviceP2PInput
+}
+
+input DeviceP2PInput {
+  id: ID
+  userAgent: String
+  brand: String
+  model: String
+  type: DeviceType
+  serialNumber: String
+  imei: String
+  os: String
+}
+
+input PointOfServiceInput {
+  type: Int
+  localization: Int
+  cardHolderPresentTransaction: Int
+  cardPresentTransaction: Boolean
+  cardCaptureCapability: Int
+  securityTransaction: Int
+  typePOS: String
+  inputCapability: String
+  panEntryMode: String
+  terminalIdentifier: String
+}
+
+input ReceiverPullInput {
+  name: String
+  firstName: String
+  lastName: String
+  displayName: String
+  legalIds: LegalIdsInput!
+  birthday: Date
+  gender: Gender
+  maritalStatus: MaritalStatus
+  income: PersonYearlyIncomeInput
+  occupationId: ID
+  contact: PersonContactInput
+  contacts: [PersonContactInput!]
+  address: AddressInput
+  bin: String
+  last4: String
+}
+
+input PersonYearlyIncomeInput {
+  personal: Float!
+  family: Float!
+  currency: String!
+}
+
+type CreatePullTransferPayload {
+  clientMutationId: String
+  cardHolder: CardHolder
+  cardTransaction: CardTransactionP2P!
+  receiver: Receiver!
+}
+
+type CardTransactionP2P implements Node {
+  id: ID!
+  type: TransferType
+  capture: CardCapture!
+  usage: CardUsage!
+  bin: BIN
+  last4: String
+  merchant: MerchantP2P!
+  currency: String!
+  value: String!
+  installments: Int!
+  status: CardTransactionStatus
+  timestamp: DateTime!
+  approvalCode: String
+  prePaid: PrePaid
+}
+
+enum TransferType {
+  P2P
+  CSB
+  DSB
+}
+
+type MerchantP2P {
+  name: String!
+  legalName: String!
+  description: String
+  legalIds: LegalIds!
+  contact: PersonContact!
+  address: Address!
+  url: String
+  iso: Int!
+  countryCode: String!
+  idCode: String!
+}
+
+type Receiver {
+  name: String
+  firstName: String
+  lastName: String
+  displayName: String
+  legalIds: LegalIds!
+  birthday: Date
+  gender: Gender
+  maritalStatus: MaritalStatus
+  income: PersonYearlyIncome
+  occupation: PersonOccupation
+  contact: PersonContact @deprecated(reason: "Esse campo deixa de existir. Utilizar o campo `contacts`")
+  contacts: [PersonContact!]
+  address: Address
+}
+
+input CreatePushTransferInput {
+  clientMutationId: String
+  transferType: TransferType
+  acquirer: AcquirerInput!
+  merchant: MerchantInput!
+  cardId: ID
+  sensitive: String
+  amount: AmountInput!
+  receiver: ReceiverInput!
+  systemsTraceAuditNumber: String!
+  transactionDateTime: DateTimeZone!
+  transactionIdentifier: String!
+  retrievalReferenceNumber: String!
+  codeUsage: Int!
+  origin: P2POriginInput
+  pointOfService: PointOfServiceInput
+  sourceOfFundsCode: String!
+  transactionIdentifierPull: String
+}
+
+input ReceiverInput {
+  sensitive: String!
+  cipheredTransactionCryptogram: String
+  name: String
+  firstName: String
+  lastName: String
+  displayName: String
+  legalIds: LegalIdsInput
+  birthday: Date
+  gender: Gender
+  maritalStatus: MaritalStatus
+  income: PersonYearlyIncomeInput
+  occupationId: ID
+  contact: PersonContactInput
+  contacts: [PersonContactInput]
+  address: AddressInput
+}
+
+type CreatePushTransferPayload {
+  clientMutationId: String
+  cardHolder: CardHolder
+  cardTransaction: CardTransactionP2P!
+  receiver: Receiver!
+}
+
+input CreatePullTransferToUserInput {
+  clientMutationId: String
+  acquirer: AcquirerInput!
+  merchant: MerchantInput!
+  sender: SenderInput!
+  receiver: ReceiverPullInput!
+  amount: AmountInput!
+  systemsTraceAuditNumber: String!
+  transactionDateTime: DateTimeZone!
+  transactionIdentifier: String!
+  retrievalReferenceNumber: String!
+  codeUsage: Int!
+  origin: P2POriginInput
+  pointOfService: PointOfServiceInput
+}
+
+input SenderInput {
+  sensitive: String!
+  cipheredTransactionCryptogram: String
+  name: String
+  firstName: String
+  lastName: String
+  displayName: String
+  legalIds: LegalIdsInput!
+  birthday: Date
+  gender: Gender
+  maritalStatus: MaritalStatus
+  income: PersonYearlyIncomeInput
+  occupationId: ID
+  contact: PersonContactInput
+  contacts: [PersonContactInput!]
+  address: AddressInput
+  sourceOfFundsCode: String
+}
+
+type CreatePullTransferToUserPayload {
+  clientMutationId: String
+  sender: Sender!
+  cardTransaction: CardTransactionP2P!
+  receiver: Receiver!
+}
+
+type Sender {
+  name: String
+  firstName: String
+  lastName: String
+  displayName: String
+  legalIds: LegalIds!
+  birthday: Date
+  gender: Gender
+  maritalStatus: MaritalStatus
+  income: PersonYearlyIncome
+  occupation: PersonOccupation
+  contact: PersonContact @deprecated(reason: "Esse campo deixa de existir. Utilizar o campo `contacts`")
+  contacts: [PersonContact!]
+  address: Address
+}
+
+input CreatePushTransferToUserInput {
+  clientMutationId: String
+  transferType: TransferType
+  acquirer: AcquirerInput!
+  merchant: MerchantInput!
+  sender: SenderPushInput!
+  receiver: ReceiverInput!
+  amount: AmountInput!
+  systemsTraceAuditNumber: String!
+  transactionDateTime: DateTimeZone!
+  transactionIdentifier: String!
+  retrievalReferenceNumber: String!
+  codeUsage: Int!
+  origin: P2POriginInput
+  pointOfService: PointOfServiceInput
+  transactionIdentifierPull: String
+}
+
+input SenderPushInput {
+  name: String
+  firstName: String
+  lastName: String
+  displayName: String
+  legalIds: LegalIdsInput!
+  birthday: Date
+  gender: Gender
+  maritalStatus: MaritalStatus
+  income: PersonYearlyIncomeInput
+  occupationId: ID
+  contact: PersonContactInput
+  contacts: [PersonContactInput!]
+  address: AddressInput
+  sourceOfFundsCode: String
+  bin: String
+  last4: String
+}
+
+type CreatePushTransferToUserPayload {
+  clientMutationId: String
+  sender: Sender!
+  cardTransaction: CardTransactionP2P!
+  receiver: Receiver!
+}
+
+input CreateReverseTransactionInput {
+  clientMutationId: String
+  transactionId: ID!
+  cardId: ID
+  sensitive: String
+  reasonCode: String!
+  authorization: AuthorizationInput!
+}
+
+input AuthorizationInput {
+  date: DateTime!
+  code: ID!
+  decision: String!
+}
+
+type CreateReverseTransactionPayload {
+  clientMutationId: String
+  cardHolder: CardHolder
+  cardTransaction: CardTransactionP2P!
+}
+
+input CreateReverseTransactionNotificationInput {
+  clientMutationId: String
+  sensitive: String!
+  transactionIdentifier: String!
+  transactionDateTime: DateTimeZone!
+  amount: AmountInput!
+  retrievalReferenceNumber: String!
+  reasonCode: String!
+}
+
+type CreateReverseTransactionNotificationPayload {
+  clientMutationId: String
+  cardHolder: CardHolder
+  cardTransaction: CardTransactionP2P!
+}
+
+input CreateHomeAssistenceInput {
+  clientMutationId: String
+  cardId: ID
+  bin: String
+  last4: String
+  useAddressRegistration: Boolean
+  address: AddressInput
+  useContactRegistration: Boolean
+  contact: PersonContactInput
+  person: PersonInput!
+  type: HomeAssistenceType!
+  description: String!
+}
+
+input PersonInput {
+  name: String!
+  contacts: [PersonContactInput!]!
+}
+
+type CreateHomeAssistencePayload {
+  clientMutationId: String
+  HomeAssistence: HomeAssistence
+}
+
+input UpdateHomeAssistenceInput {
+  clientMutationId: String
+  id: ID!
+  person: PersonInput!
+  schedule: ScheduleInput!
+  description: String!
+}
+
+input ScheduleInput {
+  date: Date!
+  period: PeriodType!
+}
+
+type UpdateHomeAssistencePayload {
+  clientMutationId: String
+  HomeAssistence: HomeAssistence
+}
+
+input CancelHomeAssistenceInput {
+  clientMutationId: String
+  id: ID!
+  reason: String
+}
+
+type CancelHomeAssistencePayload {
+  clientMutationId: String
+  HomeAssistence: HomeAssistence
+}
+
+input ConfirmHomeAssistenceInput {
+  clientMutationId: String
+  id: ID!
+  schedule: ScheduleInput!
+}
+
+type ConfirmHomeAssistencePayload {
+  clientMutationId: String
+  HomeAssistence: HomeAssistence
+  status: HomeAssistenceStatus!
+}
+
+input CreatePurchaseProtectionInsuranceInput {
+  clientMutationId: String
+  bin: String!
+  cardId: ID
+  merchant: MerchantInsuranceInput
+  invoiceNumber: String!
+  invoiceDate: Date!
+  serialNumber: String
+  brand: String!
+  model: String!
+  description: String!
+  value: Float!
+  coverageDays: Int
+  productId: ID!
+}
+
+type CreatePurchaseProtectionInsurancePayload {
+  clientMutationId: String
+  PurchaseProtectionInsurance: PurchaseProtectionInsurance
+}
+
+input CreateTravelInsuranceInput {
+  clientMutationId: String
+  bin: String!
+  merchant: MerchantInsuranceInput
+  journey: JourneyInput!
+  cardId: ID
+}
+
+input JourneyInput {
+  companyTravel: String
+  journeyLocator: String
+  trips: [TripInput!]!
+  purpose: TravelPurposeInput
+}
+
+input TripInput {
+  tripNumber: Int
+  tripLocator: String
+  type: TripType
+  departure: LayoverInput
+  arrival: LayoverInput
+  travelers: [TravelInsuranceTravelerInput!]!
+}
+
+input LayoverInput {
+  IataCode: String
+  IcaoCode: String
+  city: String!
+  country: String!
+  dateTime: DateTime!
+}
+
+input TravelInsuranceTravelerInput {
+  legalIds: InsuranceLegalIdsInput!
+  name: String!
+  birthday: Date!
+  gender: Gender!
+  pregnancyWeeks: Int
+  maritalStatus: MaritalStatus!
+  occupationId: ID
+  income: PersonYearlyIncomeInput
+  address: InsuranceAddressInput!
+  contacts: [PersonContactInput!]!
+  politicalExposure: Boolean!
+}
+
+input InsuranceLegalIdsInput {
+  cpf: String!
+  rg: RGInput
+}
+
+input InsuranceAddressInput {
+  context: String
+  country: String!
+  city: String!
+  state: String!
+  stateAbbrev: String
+  zip: String!
+  district: String!
+  kind: String
+  number: Int!
+  place: String!
+  complement: String!
+  reference: String
+  instructions: String
+  lon: Float
+  lat: Float
+}
+
+input TravelPurposeInput {
+  leisure: Boolean
+  business: Boolean
+  adventure: Boolean
+}
+
+type CreateTravelInsurancePayload {
+  clientMutationId: String
+  travelInsurance: TravelInsurance
+}
+
+input EncryptInput {
+  clientMutationId: String
+  keyLabel: String!
+  inputFormatFlag: String!
+  outputFormatFlag: String!
+  iv: String
+  message: String!
+  padding: PaddingType
+}
+
+type EncryptPayload {
+  clientMutationId: String
+  iv: String
+  message: String!
+}
+
+input DecryptInput {
+  clientMutationId: String
+  keyLabel: String!
+  inputFormatFlag: String!
+  outputFormatFlag: String!
+  iv: String!
+  message: String!
+}
+
+type DecryptPayload {
+  clientMutationId: String
+  iv: String
+  message: String!
+}
+
+input CreateHashInput {
+  clientMutationId: String
+  hashIdentifier: HashIdentifierType!
+  inputFormatType: FormatType!
+  message: String!
+}
+
+enum HashIdentifierType {
+  MD5
+  SHA_1
+  SHA_224
+  SHA_256
+  SHA_384
+  SHA_512
+  ISO_10118_2
+}
+
+enum FormatType {
+  TEXT
+  HEX_ENCODED
+}
+
+type CreateHashPayload {
+  clientMutationId: String
+  message: String!
+}
+
+input VerifyPaymentAccountInput {
+  clientMutationId: String
+  legalIds: LegalIdsInputCpfCnpjInput
+  sensitive: String!
+  type: TransactionType!
+  acquirer: AcquirerInput!
+  merchant: MerchantInput!
+}
+
+type VerifyPaymentAccountPayload {
+  clientMutationId: String
+  verifyPaymentAccount: VerifyPaymentAccount
+}
+
+input CreateLoginSaltInput {
+  clientMutationId: String
+  username: String!
+}
+
+type CreateLoginSaltPayload {
+  clientMutationId: String
+  username: String!
+  salt: String!
+  expiry: DateTime!
+}
+
+input LoginInput {
+  clientMutationId: String
+  username: String!
+  challenge: String!
+}
+
+type LoginPayload {
+  clientMutationId: String
+  accessToken: String
+  oauthToken: AccessTokenPayload
+}
+
+type AccessTokenPayload {
+  accessToken: String!
+  refreshToken: String!
+}
+
+input SocialNetworkOAuthLoginInput {
+  clientMutationId: String
+  provider: String!
+  username: String!
+  accessToken: String
+}
+
+input LogoutInput {
+  clientMutationId: String
+  accessToken: String!
+}
+
+type LogoutPayload {
+  clientMutationId: String
+  success: Boolean
+}
+
+input CreateUserInput {
+  clientMutationId: String
+  username: String
+  bcryptPassword: String
+  socialNetwork: SocialNetworkInput
+  oauth: SocialNetworkOAuthInput
+  name: String!
+  firstName: String
+  lastName: String
+  displayName: String
+  legalIds: LegalIdsInput!
+  birthday: Date
+  gender: Gender
+  maritalStatus: MaritalStatus
+  income: PersonYearlyIncomeInput
+  occupationId: ID
+  contacts: [PersonContactInput!]
+  verifyContact: TypeContactVerification
+  addresses: [AddressUserInput!]
+  originId: ID
+  origin: String
+  originUrl: String
+  originChannelRaw: String
+  originChannel: String
+  localEvent: String
+  motherName: String
+  sessionId: String
+}
+
+input SocialNetworkOAuthInput {
+  accessToken: String!
+  refreshToken: String
+  scopes: [String!]
+  expiryTimestamp: DateTime
+}
+
+enum TypeContactVerification {
+  PHONE
+  EMAIL
+}
+
+input AddressUserInput {
+  context: String
+  country: String!
+  city: String!
+  state: String!
+  stateAbbrev: String
+  zip: String
+  district: String
+  kind: String
+  number: Int
+  place: String!
+  complement: String
+  reference: String
+  instructions: String
+  lon: Float
+  lat: Float
+}
+
+type CreateUserPayload {
+  clientMutationId: String
+  id: ID!
+  name: String
+  oauthToken: AccessTokenPayload
+  validation: UserValidation!
+}
+
+input UnsubscribeUserInput {
+  token: String
+  userIdSha256: String
+  channels: [CommunicationChannelEnum!]
+}
+
+enum CommunicationChannelEnum {
+  EMAIL
+  SMS
+}
+
+type UnsubscribeUserPayload {
+  status: UnsubscribeUserStatus
+}
+
+enum UnsubscribeUserStatus {
+  UNSUBSCRIBED
+  ERROR
+}
+
+input VerifyDocumentInput {
+  clientMutationId: String
+  documentType: DocumentType!
+  image: DocumentImage!
+}
+
+input DocumentImage {
+  fullImage: String
+  frontImage: String
+  backImage: String
+}
+
+type VerifyDocumentPayload {
+  clientMutationId: String
+  id: ID!
+  documentType: DocumentType!
+  status: DocumentStatus!
+  createdAt: DateTime!
+  message: String
+}
+
+input VerifyDocumentForUserInput {
+  clientMutationId: String
+  legalId: DocumentLegalIdInput!
+  documentType: DocumentType!
+  image: DocumentImage!
+}
+
+input RefreshAccessTokenInput {
+  clientMutationId: String
+  refreshToken: String!
+}
+
+type RefreshAccessTokenPayload {
+  clientMutationId: String
+  oauthToken: AccessTokenPayload
+}
+
+input VerifyDataScoreInput {
+  legalId: LegalIdsPersonInput!
+  contact: ContactPersonInput
+  address: AddressScoreInput
+  email: String
+  deviceId: String
+  transactionType: TransactionScoreType!
+}
+
+input ContactPersonInput {
+  areaCode: String
+  phone: String
+}
+
+input AddressScoreInput {
+  zip: String
+  place: String
+  number: Int
+  complement: String
+  district: String
+  city: String
+  state: String
+  country: String
+  physicalDelivery: Boolean
+}
+
+enum TransactionScoreType {
+  PRESENCIAL
+  ONLINE
+}
+
+type VerifyDataScorePayload {
+  score: String
+  reason: String
+  ratings: [DataScoreRating]
+  insights: [DataScoreInsight]
+}
+
+type DataScoreRating {
+  value: String
+  reason: String
+  date: DateTime
+  relatedTo: [String]
+  timeline: [DataScoreTimeline]
+}
+
+type DataScoreTimeline {
+  value: String
+  reason: String
+  date: DateTime
+}
+
+type DataScoreInsight {
+  code: String
+  description: String
+  type: String
+  category: String
+  relevance: String
+  relatedTo: [String]
+}
+
+input ChangeBenefitInput {
+  documentNumber: String!
+  currentBenefitId: ID!
+  newBenefitId: ID!
+  cardId: ID!
+}
+
+type ChangeBenefitPayload {
+  documentNumber: String!
+  currentBenefitId: ID!
+  newBenefitId: ID!
+  cardId: ID!
+}
+
+input RequestRewardInput {
+  compositionId: ID!
+  cardId: ID!
+}
+
+type RequestRewardPayload {
+  id: ID!
+  bin: BIN!
+  cardId: ID!
+  description: String
+  compositionId: ID!
+  status: RewardStatus!
+  requestedDate: DateTime!
+}
+
+input ResendRewardInput {
+  rewardId: ID!
+}
+
+type ResendRewardPayload {
+  maskedEmail: String
+}
+
+input VerifyUserScoreInput {
+  clientMutationId: String
+  legalId: LegalIdsPersonInput!
+  name: String!
+  birthday: Date
+  email: String
+  zipCode: String
+  mobile: MobileType
+  twoFactorAuthentication: Boolean
+  sessionId: String
+}
+
+input MobileType {
+  areaCode: String
+  number: String
+}
+
+type VerifyUserScorePayload {
+  clientMutationId: String
+  result: ResultVerifyUserScoreType!
+  details: [ResultVerifyUserScoreDetails]
+}
+
+enum ResultVerifyUserScoreType {
+  DENY
+  HOLD
+  APPROVED
+}
+
+enum ResultVerifyUserScoreDetails {
+  PRIMARY_EMAIL
+  PRIMARY_PHONE
+  SECONDARY_EMAIL
+  SECONDARY_PHONE
+}
+
+input CaseCustomerNotificationInput {
+  customer: CustomerInput!
+  type: String!
+  reason: String!
+  description: String!
+  origin: String!
+  subOrigin: String
+  attachment: String
+  bin: String
+}
+
+input CustomerInput {
+  type: String
+  legalId: LegalIdCpfInput!
+  firstName: String!
+  lastName: String!
+  email: String!
+  phone: String!
+  mobilePhone: String!
+  birthdate: Date
+  address: [AddressCustomerNotificationInput]
+}
+
+input LegalIdCpfInput {
+  cpf: String!
+}
+
+input AddressCustomerNotificationInput {
+  place: String
+  number: Int
+  city: String
+  zip: String
+  country: String
+  state: String
+  type: AddressCustomerNotificationType
+}
+
+enum AddressCustomerNotificationType {
+  SHIPPING
+  BILLING
+}
+
+type CaseCustomerNotificationPayload {
+  cpf: String
+  type: String
+  reason: String
+  description: String
+  origin: String
+  subOrigin: String
+  bin: String
+}
+
+input SetImageInput {
+  clientMutationId: String
+  id: ID!
+  filename: String!
+  image: String!
+}
+
+type SetImagePayload {
+  clientMutationId: String
+  node: Node
+}
+
+input CreateCardInput {
+  clientMutationId: String
+  sensitive: String!
+  holderId: ID!
+  billingAddress: AddressInput
+  verificationStatus: CardVerificationStatus
+}
+
+type CreateCardPayload {
+  clientMutationId: String
+  card: Card
+}
+
+input DeleteCardInput {
+  clientMutationId: String
+  cardId: ID!
+}
+
+type DeleteCardPayload {
+  clientMutationId: String
+  cardId: ID!
+  last4: String
+  expiry: CardExpiry
+  holder: CardHolder
+  bin: BIN
+}
+
+input UpdateCardInput {
+  clientMutationId: String
+  holderId: ID!
+  billingAddress: AddressInput
+  status: CardStatus
+  verificationStatus: CardVerificationStatus
+  sensitive: String
+}
+
+type UpdateCardPayload {
+  clientMutationId: String
+  card: Card
+}
+
+input UpdateCardVerificationInput {
+  clientMutationId: String
+  cardId: ID!
+  verificationStatus: CardVerificationStatus!
+}
+
+type UpdateCardVerificationPayload {
+  clientMutationId: String
+  card: Card
+}
+
+input CreateProvisionedCardInput {
+  clientMutationId: String
+  userId: ID!
+  sensitive: String
+  bin: String
+  last4: String
+  hashCard: String
+  billingAddress: AddressInput
+}
+
+input DeleteCardHolderInput {
+  clientMutationId: String
+  cardHolderId: ID!
+}
+
+type DeleteCardHolderPayload {
+  clientMutationId: String
+  user: User
+  companyName: String
+  companyLegalName: String
+}
+
+input RequestPasswordResetInput {
+  clientMutationId: String
+  legalId: LegalIdsInput!
+  email: String
+  phone: String
+  type: PersonContactType
+}
+
+type RequestPasswordResetPayload {
+  clientMutationId: String
+  maskedEmail: String
+  maskedPhone: String
+}
+
+input PasswordResetInput {
+  clientMutationId: String
+  legalId: LegalIdsInput!
+  email: String
+  phone: String
+  token: String!
+  type: PersonContactType
+  bcryptPassword: String!
+}
+
+type PasswordResetPayload {
+  clientMutationId: String
+  user: User
+}
+
+input RequestContactVerificationInput {
+  clientMutationId: String
+  userId: ID!
+  type: PersonContactType!
+  value: String!
+}
+
+type RequestContactVerificationPayload {
+  clientMutationId: String
+  user: User
+  contact: PersonContact
+}
+
+input ContactVerificationInput {
+  clientMutationId: String
+  userId: ID!
+  type: PersonContactType!
+  value: String!
+  verificationCode: String!
+}
+
+type ContactVerificationPayload {
+  clientMutationId: String
+  user: User
+  contact: PersonContact
+}
+
+input DeleteUserInput {
+  clientMutationId: String
+  userId: ID!
+}
+
+type DeleteUserPayload {
+  clientMutationId: String
+  userId: ID!
+  username: String!
+  name: String
+  firstName: String
+  lastName: String
+  displayName: String
+}
+
+input UpdateUserInput {
+  clientMutationId: String
+  id: ID!
+  username: String
+  name: String
+  firstName: String
+  lastName: String
+  displayName: String
+  legalIds: LegalIdsInput
+  birthday: Date
+  gender: Gender
+  maritalStatus: MaritalStatus
+  income: PersonYearlyIncomeInput
+  occupationId: ID
+  contacts: [PersonContactInput]
+  addresses: [AddressUserInput]
+  motherName: String
+}
+
+type UpdateUserPayload {
+  clientMutationId: String
+  user: User
+}
+
+input CreateCardHolderForUserInput {
+  clientMutationId: String
+  userId: ID!
+  companyName: String
+  companyLegalName: String
+  companylegalIds: CompanyLegalIdsInput
+}
+
+type CreateCardHolderForUserPayload {
+  clientMutationId: String
+  user: User
+  cardHolder: CardHolder
+}
+
+input AddCardIssuerToUserInput {
+  clientMutationId: String
+  userId: ID!
+  cardIssuerId: ID!
+}
+
+type AddCardIssuerToUserPayload {
+  clientMutationId: String
+  user: User
+  cardIssuer: CardIssuer
+}
+
+input RemoveCardIssuerFromUserInput {
+  clientMutationId: String
+  userId: ID!
+  cardIssuerId: ID!
+}
+
+type RemoveCardIssuerFromUserPayload {
+  clientMutationId: String
+  user: User
+  cardIssuer: CardIssuer
+}
+
+input AddMerchantToUserInput {
+  clientMutationId: String
+  userId: ID!
+  merchantId: ID!
+}
+
+type AddMerchantToUserPayload {
+  clientMutationId: String
+  user: User
+  merchant: Merchant
+}
+
+input RemoveMerchantFromUserInput {
+  clientMutationId: String
+  userId: ID!
+  merchantId: ID!
+}
+
+type RemoveMerchantFromUserPayload {
+  clientMutationId: String
+  user: User
+  merchant: Merchant
+}
+
+input AddSocialNetworkToUserInput {
+  clientMutationId: String
+  userId: ID!
+  socialNetwork: SocialNetworkInput!
+  oauth: SocialNetworkOAuthInput
+}
+
+type AddSocialNetworkToUserPayload {
+  clientMutationId: String
+  user: User
+  socialNetwork: SocialNetworkInterface
+}
+
+interface SocialNetworkInterface {
+  provider: String!
+  username: String!
+}
+
+input RemoveSocialNetworkFromUserInput {
+  clientMutationId: String
+  userId: ID!
+  socialNetwork: SocialNetworkInput!
+}
+
+type RemoveSocialNetworkFromUserPayload {
+  clientMutationId: String
+  user: User
+  provider: String!
+  username: String!
+}
+
+input AddPublicKeyToUserInput {
+  clientMutationId: String
+  userId: ID!
+  key: String!
+  format: CryptoKeyFormat
+}
+
+enum CryptoKeyFormat {
+  JWK
+  PEM
+  X509
+}
+
+type AddPublicKeyToUserPayload {
+  clientMutationId: String
+  user: User
+  publicKey: PublicKey
+}
+
+input RemovePublicKeyFromUserInput {
+  clientMutationId: String
+  userId: ID!
+  keyId: String!
+}
+
+type RemovePublicKeyFromUserPayload {
+  clientMutationId: String
+  user: User
+  publicKey: PublicKey
+}
+
+input AddAgreementToUserInput {
+  clientMutationId: String
+  userId: ID!
+  agreementTermId: ID!
+  timestamp: DateTime
+}
+
+type AddAgreementToUserPayload {
+  clientMutationId: String
+  user: User
+  agreement: UserAgreement
+}
+
+input RemoveAgreementFromUserInput {
+  clientMutationId: String
+  userId: ID!
+  agreementTermId: ID!
+}
+
+type RemoveAgreementFromUserPayload {
+  clientMutationId: String
+  user: User
+  agreementTerm: AgreementTerm
+}
+
+input CreateAgreementTermInput {
+  clientMutationId: String
+  title: String!
+  description: String
+  url: String!
+  category: AgreementTermCategory
+  isWalletDigital: Boolean
+}
+
+type CreateAgreementTermPayload {
+  clientMutationId: String
+  id: String
+}
+
+input RemoveAgreementTermInput {
+  clientMutationId: String
+  agreementTermId: ID!
+}
+
+type RemoveAgreementTermPayload {
+  clientMutationId: String
+}
+
+input PasswordUpdateInput {
+  clientMutationId: String
+  userId: ID!
+  bcryptPasswordOld: String!
+  bcryptPasswordNew: String!
+  bcryptPasswordConfirmedNew: String!
+}
+
+type PasswordUpdatePayload {
+  clientMutationId: String
+  user: User
+}
+
+input CreateProvisionedUserInput {
+  clientMutationId: String
+  name: String
+  legalIds: LegalIdsInput!
+  birthday: Date
+  gender: Gender
+  maritalStatus: MaritalStatus
+  income: PersonYearlyIncomeInput
+  occupationId: ID
+  contacts: [PersonContactInput]
+  addresses: [AddressInput]
+  originId: ID
+  origin: String
+  originUrl: String
+  originChannelRaw: String
+  originChannel: String
+  localEvent: String
+  transaction: TransactionInput
+  event: String
+  ticket: String
+  motherName: String
+}
+
+input TransactionInput {
+  transactionId: String
+  dateTime: DateTime
+  amount: AmountInput
+}
+
+type CreateProvisionedUserPayload {
+  clientMutationId: String
+  id: ID!
+  name: String
+}
+
+input UpdateProvisionedUserInput {
+  clientMutationId: String
+  id: ID!
+  legalIds: LegalIdsInput
+  birthday: Date
+  gender: Gender
+  maritalStatus: MaritalStatus
+  income: PersonYearlyIncomeInput
+  occupationId: ID
+  contacts: [PersonContactInput]
+  addresses: [AddressInput]
+  card: CreateProvisionedCardInput
+  transaction: TransactionInput
+  event: String
+  ticket: String
+  motherName: String
+}
+
+type UpdateProvisionedUserPayload {
+  clientMutationId: String
+  user: ProvisionedUser
+  cards: [Card]
+  cardTokens: [CardToken]
+}
+
+input AddAcquirerToUserInput {
+  clientMutationId: String
+  acquirerCode: String!
+}
+
+type AddAcquirerToUserPayload {
+  clientMutationId: String
+  user: User
+  acquirer: Acquirer
+}
+
+input RemoveAcquirerFromUserInput {
+  clientMutationId: String
+  acquirerCode: String!
+}
+
+type RemoveAcquirerFromUserPayload {
+  clientMutationId: String
+  user: User
+  acquirer: Acquirer
+}
+
+input CreateCardTokenForUserInput {
+  clientMutationId: String
+  sensitive: String
+  cipheredCardVerificationData: String
+  cardId: ID
+  user: CreateProvisionedUserInput
+  origin: CreateCardTokenOriginInput
+  usageConstraints: CardUsageConstraintsInput
+  tokenRequestorId: String!
+  cardProductId: String
+  lifeCycleCallbackUrl: String
+}
+
+type CreateCardTokenForUserPayload {
+  clientMutationId: String
+  cardToken: CardToken
+}
+
+input CreateCardTokenForUserAsyncInput {
+  clientMutationId: String
+  sensitive: String!
+  user: CreateProvisionedUserInput
+  usageConstraints: CardUsageConstraintsInput
+  tokenRequestorId: String!
+  cardProductId: String
+  callbackUrl: String!
+  lifeCycleCallbackUrl: String
+}
+
+type CreateCardTokenForUserAsyncPayload {
+  clientMutationId: String
+  cardTokenRequestId: ID!
+}
+
+input UpdateCardTokenCallbackUrlInput {
+  url: String
+  cardId: ID!
+}
+
+type UpdateCardTokenCallbackUrlPayload {
+  success: Boolean
+}
+
+input CreateCardFraudTransactionInput {
+  clientMutationId: String
+  cardFraudTransaction: CardFraudTransactionInput!
+  reference: String
+  codePos: ID!
+  liability: LiabilityType
+  codeEic: String
+  flaggedAt: DateTime
+  arn: Int
+  initiated: InitiatedType!
+  settled: Date!
+}
+
+input CardFraudTransactionInput {
+  codeCapture: Int!
+  codeUsage: Int!
+  sensitive: String
+  bin: String
+  last4: String
+  authorization: AuthorizationInput!
+  legalId: String!
+  merchantName: String!
+  iso: Int!
+  acquirerId: ID
+  currency: String!
+  value: String!
+  installments: Int!
+  timestamp: DateTime!
+}
+
+type CreateCardFraudTransactionPayload {
+  clientMutationId: String
+  cardFraudTransaction: CardFraudTransaction
+}
+
+input CommunicationChannelInput {
+  channels: [CommunicationChannelEnum]!
+}
+
+type CommunicationChannelPayload {
+  communicationChannels: [String]
+}
+
+input ProvisionedCommunicationChannelInput {
+  userId: ID!
+  channels: [CommunicationChannelEnum]!
+}
+
+type ProvisionedCommunicationChannelPayload {
+  userId: ID!
+  communicationChannels: [String]
+}
+
+input CreateUserInterestInput {
+  clientMutationId: String
+  title: String!
+  description: String
+}
+
+type CreateUserInterestPayload {
+  clientMutationId: String
+  id: String
+}
+
+input RemoveUserInterestInput {
+  clientMutationId: String
+  userInterestId: ID!
+}
+
+type RemoveUserInterestPayload {
+  clientMutationId: String
+}
+
+input AddInterestToUserInput {
+  clientMutationId: String
+  userInterestId: ID!
+  timestamp: DateTime
+}
+
+type AddInterestToUserPayload {
+  clientMutationId: String
+  user: User
+  interest: UserInterest
+}
+
+input RemoveInterestFromUserInput {
+  clientMutationId: String
+  userInterestId: ID!
+}
+
+type RemoveInterestFromUserPayload {
+  clientMutationId: String
+  user: User
+  interest: UserInterest
+}
+
+input AddInterestToProvisionedUserInput {
+  clientMutationId: String
+  userId: ID!
+  userInterestId: ID!
+  timestamp: DateTime
+}
+
+input RemoveInterestFromProvisionedUserInput {
+  clientMutationId: String
+  userId: ID!
+  userInterestId: ID!
+}
+
+input UpdateUserInterestsInput {
+  clientMutationId: String
+  userIdSha256: String!
+  userInterestIds: [ID!]!
+}
+
+type UpdateUserInterestsPayload {
+  clientMutationId: String
+  userInterests: [UserInterest!]
+}
+
+input CommunicationChannelBlockInput {
+  begin: Date
+  end: Date!
+}
+
+type CommunicationChannelBlockPayload {
+  id: ID!
+}
+
+scalar LengthValidator
+
+input AdditionalInformationInput {
+  itemTransaction: String
+  price: String
+  customerName: String
+  other: String
+}
+
+enum Brand {
+  MASTERCARD
+  VISA
+  AMEX
+  ELO
+  HIPERCARD
+}
+
+type cardData {
+  holderName: String
+  bin: BIN
+  last4: String
+  expiry: CardExpiry
+}
+
+input CardExpiryInput {
+  month: Int!
+  year: Int!
+}
+
+type CardHolderInsuranceCoverage {
+  description: String!
+  coverage: String!
+}
+
+interface CardHolderInsuranceDetailsInterface {
+  legalDisclaimer: String!
+  coverage: [CardHolderInsuranceCoverage!]!
+}
+
+type CardStatusActive implements CardStatusInterface {
+  status: CardStatus!
+  activatedTimestamp: DateTime!
+  suspendInstructions(language: String): String!
+}
+
+type CardStatusInactive implements CardStatusInterface {
+  status: CardStatus!
+  activateInstructions(language: String): String!
+}
+
+type CardStatusSuspended implements CardStatusInterface {
+  status: CardStatus!
+  permanent: Boolean!
+  reason: CardSuspendReason!
+  suspendedTimestamp: DateTime!
+  instructions(language: String): String!
+}
+
+type CreateP2POrigin {
+  geolocation: Geolocation
+  device: DeviceP2P
+}
+
+type DeviceP2P {
+  id: ID
+  userAgent: String
+  brand: String
+  model: String
+  type: DeviceType
+  serialNumber: String
+  imei: String
+  os: String
+}
+
+enum CryptoHashAlgorithm {
+  SHA1
+  SHA256
+  SHA384
+  SHA512
+}
+
+type DocumentLegalId {
+  cpf: String!
+}
+
+input HsmPropertiesInput {
+  mode: String!
+  keyType: String!
+  key: String!
+  ksnDescriptor: String
+  keySerialNumber: String
+  lmkIdentifier: String!
+  padding: PaddingType
+  delimiter: String
+}
+
+type LegalIdsInputCpfCnpj {
+  cpf: CPF
+  cnpj: CNPJ
+}
+
+type PersonLegalIds {
+  cpf: CPF
+  rg: RG
+}
+
+enum PSPTransactionStatus {
+  APPROVED
+  DENIED
+  REVERSAL_ADVICE
+  REVERSAL
+}
+
+enum sendOption {
+  TOKEN_SMS
+  TOKEN_EMAIL
+  HOTPHONE
+  HOTMAIL
+}
+
+type SocialNetworkOAuth implements SocialNetworkInterface {
+  provider: String!
+  username: String!
+  accessToken: String
+  refreshToken: String
+  scopes: [String!]
+  expiryTimestamp: DateTime
+}
+
+type TravelInsuranceBeneficiary {
+  legalIds: InsuranceLegalIds!
+  name: String!
+  birthday: Date!
+  gender: Gender!
+  relationship: TravelInsuranceBeneficiaryRelationship!
+  percentageShare: Float!
+}
+
+enum TravelInsuranceBeneficiaryRelationship {
+  SPOUSE
+  OFFSPRING
+  PARENT
+  SIBLING
+  OTHER
+}
+
+input TravelInsuranceBeneficiaryInput {
+  legalIds: InsuranceLegalIdsInput!
+  name: String!
+  birthday: Date!
+  gender: Gender!
+  relationship: TravelInsuranceBeneficiaryRelationship!
+  percentageShare: Float!
+}
+
+type VerifyProfileScore {
+  cpf: String!
+}
