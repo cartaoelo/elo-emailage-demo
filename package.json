@@ -10,6 +10,8 @@
     "boxicons": "^2.0.7",
     "crypto": "^1.0.1",
     "crypto-js": "^4.0.0",
+    "graphql-request": "^3.3.0",
+    "graphql-tag": "^2.11.0",
     "isomorphic-fetch": "^3.0.0",
     "izitoast": "^1.4.0",
     "js-base64": "^3.6.0",
@@ -28,7 +30,10 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "generate": "npm run generate:graphql && npm run codegen",
+    "generate:graphql": "apollo client:download-schema schema.graphql",
+    "codegen": "graphql-codegen"
   },
   "eslintConfig": {
     "extends": [
@@ -49,6 +54,10 @@
     ]
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^1.19.3",
+    "@graphql-codegen/typescript": "^1.18.1",
+    "@graphql-codegen/typescript-graphql-request": "^2.0.3",
+    "@graphql-codegen/typescript-operations": "^1.17.12",
     "@types/bcryptjs": "^2.4.2",
     "@types/crypto-js": "^4.0.1",
     "@types/isomorphic-fetch": "^0.0.35",
@@ -62,6 +71,7 @@
     "@types/styled-components": "^5.1.4",
     "@typescript-eslint/eslint-plugin": "^4.7.0",
     "@typescript-eslint/parser": "^4.7.0",
+    "apollo": "^2.31.1",
     "eslint": "^7.13.0",
     "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-react": "^7.21.5",
