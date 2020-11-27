@@ -98,8 +98,6 @@ const Home = () => {
 			authorization
 		})
 
-		console.log('[resLoginJSON]', resLoginJSON)
-
 		if (resLoginJSON.data === undefined) {
 			return iziToast.error({
 				title: 'Erro',
@@ -110,9 +108,7 @@ const Home = () => {
 		if (resLoginJSON.data === undefined) {
 			return false
 		}
-		console.log('[resLoginJSON]', resLoginJSON)
 		const { accessToken } = resLoginJSON.data
-		console.log('[accessToken]', accessToken)
 
 		dispatch({ type: 'CHANGE_ACCESSTOKEN', payload: accessToken })
 

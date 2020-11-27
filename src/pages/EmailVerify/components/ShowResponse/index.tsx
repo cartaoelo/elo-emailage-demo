@@ -19,7 +19,6 @@ interface Props {
 
 const ShowResponse = (props: Props) => {
 	const { response, setControl, subControl, stateModal, setStateModal } = props
-	console.log('[resposnt', response)
 	return (
 		<>
 			{subControl === 'Rapid' && (

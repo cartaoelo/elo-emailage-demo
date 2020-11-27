@@ -57,8 +57,6 @@ const RapidScore = (props: Props) => {
 				message: `Erro desconhecido, recarregue a página e tente novamente.`
 			})
 		}
-		console.log('[values]', values)
-
 		const eloRes = await callApi('rapidScore', 'verifyEmailRapidScore', {
 			access_token,
 			variables: {

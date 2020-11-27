@@ -49,7 +49,6 @@ const callApiErrorHandler = async ({ res }: ErrorHandler): Promise<boolean> => {
 				})
 				return false
 			}
-			console.log('[important]', res)
 			const { code, description } = JSON.parse(res.errors[0].message)[0]
 			iziToast.error({
 				title: 'Erro',
