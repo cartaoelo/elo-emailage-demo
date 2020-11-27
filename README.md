@@ -38,7 +38,7 @@ Altere os campos de _client_id_, _secret_ e, se disponível, o id da sua aplica�
 
 Realize login na página [login](./src/pages/Home/index.tsx) com seu usuário Elo ou Google, caso haja algum erro, a aplicação devolverá com a descrição do erro. Os dados do login, como o _access token_, serão salvos localmente no seu navegador para facilitar integrações.
 
-### **Elo Emailage - Obtenha um score, avaliação de risco de um determinado e-mail**
+### **Elo Emailage - Obtenha um score, avaliação de risco de um determinado e-mail.**
 
 Após realizar login, selecione o tipo de consulta desejada e insira o e-mail que deseja realizar a verificação e, se desejar, demais informações complementares (opcionais).
 
